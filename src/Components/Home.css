@@ -2,6 +2,7 @@
     padding:0px;
     margin:0px;
     box-sizing: border-box;
+    border:1px solid red;
 }
 .text_container{
     margin-top:10px;
@@ -55,7 +56,7 @@ select{
     width:100%;
 
 }
-.btncontainer button{
+ button{
     background-color: blue;
     color:white;
     height:42px;
@@ -88,3 +89,30 @@ select{
     }
   }
   
+
+  @media screen and (max-width:400px){
+
+    .text_container{
+        flex-direction: column;
+        margin-top:90px;
+        height: auto;
+    }
+    .textarea_container1{
+        width:100%;
+        height:auto;
+    }
+ 
+
+    .btncontainer{
+        width:100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    select{
+        width:60%;
+        height:30px;
+    }
+    
+
+  }
