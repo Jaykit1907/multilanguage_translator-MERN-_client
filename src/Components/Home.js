@@ -22,7 +22,9 @@ const Home = () => {
       const Response = await axios.get("https://multilanguage-translator-mern-backend.vercel.app/home", {
         withCredentials: true,
       });
+      console.log("after home_page....");
       if (Response.data.msg3) {
+        
         setShowlogin(false);
         setShow(true);
         Navigate("/");
@@ -34,7 +36,7 @@ const Home = () => {
       }
     };
     fetchHome();
-  }, [Navigate]);
+  });
 
   const handleTranslate = async () => {
     try {
