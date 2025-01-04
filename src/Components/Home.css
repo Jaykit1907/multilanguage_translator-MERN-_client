@@ -1,0 +1,90 @@
+*{
+    padding:0px;
+    margin:0px;
+    box-sizing: border-box;
+}
+.text_container{
+    margin-top:10px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    height:90vh;
+   
+}
+.textarea_container1{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+}
+select{
+    height:35px;
+    width:15vw;
+    border-radius: 5px;
+    cursor:pointer;
+    font-size:16px;
+    color:rgb(32, 25, 25);
+}
+.textarea_container1 textarea{
+    height:45vh;
+    width:45vw;
+    border-radius: 9px;
+    margin:10px;
+    resize:none;
+    color:rgb(43, 11, 43);
+    gap:10px;
+    padding:6px;
+    border:1px solid purple;
+    font-size:20px;
+    box-shadow: 0px 0px 5px rgb(165, 37, 165);
+    
+}
+.textarea_container1 textarea:focus{
+    border:1px solid purple;
+    outline:none;
+   
+}
+
+.btncontainer{ 
+    display: flex;
+    align-items: center;
+    justify-content:flex-start;
+
+    padding-left:30px;
+    width:100%;
+
+}
+.btncontainer button{
+    background-color: blue;
+    color:white;
+    height:42px;
+    width:85px;
+    margin:10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.login_display1{
+    position:relative;
+}
+.login_display {
+    display: block;
+    position: absolute;
+    top: 80px;
+    left: 50%;
+    transform: translate(-50%, 0); 
+    animation: login_transition 0.8s linear;
+  }
+  
+  @keyframes login_transition {
+    0% {
+      transform: translate(-50%, -500px); 
+      opacity: 0;
+    }
+    100% {
+      transform: translate(-50%, 0);
+      opacity: 1;
+    }
+  }
+  
