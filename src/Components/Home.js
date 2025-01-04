@@ -17,6 +17,7 @@ const Home = () => {
 //   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log("loading...home page.......");
     const fetchHome = async () => {
       const Response = await axios.get("https://multilanguage-translator-mern-backend.vercel.app/home", {
         withCredentials: true,
