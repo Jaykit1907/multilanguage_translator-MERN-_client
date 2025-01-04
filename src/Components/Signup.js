@@ -23,7 +23,7 @@ const Signup=()=>{
                 e.preventDefault();
 
                 try{
-                const Response= await axios.post("http://localhost:5000/signupdata",{
+                const Response= await axios.post("https://multilanguage-translator-mern-backend.vercel.app/signupdata",{
                     name:alldata.name,
                     phone:alldata.phone,
                     email:alldata.email,
