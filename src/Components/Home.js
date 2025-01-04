@@ -18,7 +18,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchHome = async () => {
-      const Response = await axios.get("http://localhost:5000/home", {
+      const Response = await axios.get("https://multilanguage-translator-mern-backend.vercel.app/home", {
         withCredentials: true,
       });
       if (Response.data.msg3) {
@@ -38,7 +38,7 @@ const Home = () => {
   const handleTranslate = async () => {
     try {
     //   setLoading(true);
-      const response = await axios.post("http://localhost:5000/translate", {
+      const response = await axios.post("https://multilanguage-translator-mern-backend.vercel.app/translate", {
         text: textToTranslate,
         language1: selectedLanguage1,
         language2: selectedLanguage2,
@@ -78,7 +78,7 @@ const Home = () => {
 
   const logoutbtn=async()=>{
     try{
-    const Response=await axios.get("http://localhost:5000/logout",{
+    const Response=await axios.get("https://multilanguage-translator-mern-backend.vercel.app/logout",{
       withCredentials:true,
     });
     if(Response.data){
