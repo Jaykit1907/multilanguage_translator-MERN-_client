@@ -36,7 +36,7 @@ const Home = () => {
       }
     };
     fetchHome();
-  });
+  },[]);
 
   const handleTranslate = async () => {
     try {
