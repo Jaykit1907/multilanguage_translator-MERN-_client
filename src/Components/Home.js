@@ -6,9 +6,9 @@ import Login from "./Login.js";
 import LanguageList from "./LanguageList.js";
 
 const Home = () => {
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
   const [msg, setMsg] = useState("");
-  const [showlogin, setShowlogin] = useState(true);
+  const [showlogin, setShowlogin] = useState(false);
   const Navigate = useNavigate();
   const [selectedLanguage1, setSelectedLanguage1] = useState("en");
   const [selectedLanguage2, setSelectedLanguage2] = useState("hi");
