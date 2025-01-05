@@ -112,6 +112,11 @@ select{
         align-items: center;
         justify-content: start;
     }
+    select{
+        width:40%;
+        height:30px;
+
+    }
 
 
   }
@@ -141,7 +146,8 @@ select{
     }
 
     select{
-        width:60%;
+
+        width:50%;
         height:30px;
     }
     .login_display {

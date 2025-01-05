@@ -28,6 +28,7 @@ form{
 form h1{
     color:purple;
     font-size:35px;
+    text-align: center;
 }
 
 form input{
