@@ -2,6 +2,7 @@ import React,{useState} from "react";
 import "./Login.css";
 import axios from "axios";
 import {Link} from "react-router-dom";
+import {SIGNUP_URL} from "./Url.js";
 import { useNavigate } from "react-router-dom";
 const Signup=()=>{
 
@@ -23,7 +24,7 @@ const Signup=()=>{
                 e.preventDefault();
 
                 try{
-                const Response= await axios.post("https://multilanguage-translator-mern-backend.vercel.app/signupdata",{
+                const Response= await axios.post(SIGNUP_URL,{
                     name:alldata.name,
                     phone:alldata.phone,
                     email:alldata.email,

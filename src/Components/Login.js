@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import {Link,useNavigate} from "react-router-dom";
 import "./Login.css";
+import { LOGIN_URL } from "./Url";
 
 
 const Login=(props)=>{
@@ -19,7 +20,7 @@ const Login=(props)=>{
 
 
         try{
-        const Response=await axios.post("https://multilanguage-translator-mern-backend.vercel.app/logindata",{
+        const Response=await axios.post(LOGIN_URL,{
             email:email,
             password:password
         },{
@@ -32,7 +33,7 @@ const Login=(props)=>{
             setMsg(Response.data.msg1);
             setTimeout(()=>{
                 setShow(false);
-                navigate("/");
+                navigate("/", { state: { loggedIn: true } }); 
             },2000);
             
         }

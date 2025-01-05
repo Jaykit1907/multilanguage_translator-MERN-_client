@@ -56,6 +56,9 @@ select{
     width:100%;
 
 }
+.btncontainer1{
+    display: none;
+}
  button{
     background-color: blue;
     color:white;
@@ -88,7 +91,30 @@ select{
       opacity: 1;
     }
   }
-  
+  @media screen and (max-width:700px){
+    .textarea_container1{
+        width:100%;
+    }
+
+    .textarea_container1 textarea{
+        width:30vw;
+        height: 30vh;
+    }
+    .logoutbtn{
+        position:relative;
+    }
+    .btncontainer{
+        display: none;
+
+    }
+    .btncontainer1{
+        display: flex;
+        align-items: center;
+        justify-content: start;
+    }
+
+
+  }
 
   @media screen and (max-width:400px){
 
@@ -96,17 +122,22 @@ select{
         flex-direction: column;
         margin-top:90px;
         height: auto;
+        margin-top:0px;
     }
     .textarea_container1{
         width:100%;
         height:auto;
     }
  
+    .textarea_container1 textarea{
+        width:80vw;
+        height:24vh;
+    }
 
     .btncontainer{
         width:100%;
-        display: flex;
-        justify-content: center;
+        display:none;
+        
     }
 
     select{
