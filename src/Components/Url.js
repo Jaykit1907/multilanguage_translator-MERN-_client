@@ -1,6 +1,6 @@
 // src/urls.js
 //export const BASE_URL = "http://localhost:5000";
-
+//https://multilanguage-translator-mern-backend.vercel.app/
 export const BASE_URL="https://multilanguage-translator-mern-backend.vercel.app";
 export const HOME_URL = `${BASE_URL}/home`;
 export const LOGIN_URL = `${BASE_URL}/logindata`;
