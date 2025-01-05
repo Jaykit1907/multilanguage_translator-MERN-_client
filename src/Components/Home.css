@@ -117,6 +117,9 @@ select{
         height:30px;
 
     }
+    .login_display {
+        width:60%;
+    }
 
 
   }
