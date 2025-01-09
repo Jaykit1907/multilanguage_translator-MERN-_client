@@ -48,7 +48,7 @@ const handleTranslate = async () => {
       setTranslatedText(response.data.translatedText);
     } else {
       // Redirect or alert user to log in
-      alert("Please log in to use the translation feature.");
+      alert("Please login to use the translation feature.");
       Navigate("/login");
     }
   } catch (error) {
