@@ -43,3 +43,11 @@ a:hover{
     font-size:20px;
     color:white;
 }
+
+@media screen and (max-width:400px){
+
+    .username_container p{
+        font-size:18px;
+    }
+    
+}
