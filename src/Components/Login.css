@@ -3,6 +3,9 @@
     padding:0px;
     margin:0px;
 }
+body{
+    height:100vh;
+}
 
 .login_container{
     display: flex;

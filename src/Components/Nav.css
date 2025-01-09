@@ -7,9 +7,11 @@
 nav{
     display: flex;
     align-items: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
     background-color: purple;
     height:50px;
+    padding:0px 30px;
+    
 
     
 }
@@ -26,4 +28,18 @@ a:hover{
 }
 .active{
         border-bottom: 2px solid gainsboro;
+}
+
+.logoutbtn{
+    background-color: rgb(187, 185, 185);
+    color:rgb(24, 5, 13);
+}
+.username_container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.username_container p{
+    font-size:20px;
+    color:white;
 }
