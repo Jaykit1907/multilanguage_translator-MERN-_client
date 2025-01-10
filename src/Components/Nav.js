@@ -12,6 +12,7 @@ import History2 from "./History2.js";
 const Nav = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user,setUser]=useState("");
+  const [email,setEmail]=useState("");
 
   // Check authentication status
   const checkAuthStatus = async () => {
@@ -23,6 +24,8 @@ const Nav = () => {
       console.log("Backend authenticated value:", value);
 
       setUser(response.data.user);
+    
+      setEmail(response.data.email);
   
       setIsAuthenticated(value); // Update state with the value from the backend
     } catch (error) {
@@ -73,8 +76,14 @@ const handleLogout = async () => {
       </nav>
 
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/history" element={<History2/>}/>
+      <Route
+  path="/"
+  element={
+    email ? <Home email={email} /> : <p>Loading email...</p>
+  }
+/>
+
+        <Route path="/history" element={<History2 email={email}/>}/>
         <Route
           path="/login"
           element={

@@ -8,7 +8,7 @@ import { useLocation } from "react-router-dom";
 
 import LanguageList from "./LanguageList.js";
 
-const Home = () => {
+const Home = ({email}) => {
   const [show, setShow] = useState(true);
   const [msg, setMsg] = useState("");
   const [showlogin, setShowlogin] = useState(true);
@@ -18,6 +18,8 @@ const Home = () => {
   const [translatedText, setTranslatedText] = useState("");
   const [textToTranslate, setTextToTranslate] = useState("");
   const location = useLocation();
+  const [localEmail, setLocalEmail] = useState(email);
+
 //   const [loading, setLoading] = useState(false);
 //hii
 
@@ -30,42 +32,40 @@ useEffect(() => {
   }
 }, [location.state]);
 
-function getCookie(name) {
-  const cookieArr = document.cookie.split("; ");
-  for (const cookie of cookieArr) {
-      const [key, value] = cookie.split("=");
-      if (key === name) {
-          return decodeURIComponent(value); // Decode the cookie value
-      }
-  }
-  return null; // Return null if the cookie is not found
-}
+
+
+// function getCookie(name) {
+//   const cookieArr = document.cookie.split("; ");
+//   for (const cookie of cookieArr) {
+//       const [key, value] = cookie.split("=");
+//       if (key === name) {
+//           return decodeURIComponent(value); // Decode the cookie value
+//       }
+//   }
+//   return null; // Return null if the cookie is not found
+// }
 
 // Example usage:
 
-
 const handleTranslate = async () => {
   try {
-    const email = getCookie("email");
-    console.log("this is email",email); 
-    // Verify authentication
+    console.log("This is email:", localEmail); // Debugging
+    // Use localEmail for the translation request
     const GetVerify = await axios.get(AUTHENTICATION_URL, { withCredentials: true });
 
     if (GetVerify.status === 200 && GetVerify.data.authenticated) {
-      // Proceed with translation if authenticated
       const response = await axios.post(
         TRANSLATE_URL,
         {
           text: textToTranslate,
           language1: selectedLanguage1,
           language2: selectedLanguage2,
-          email: email,
+          email: localEmail, // Use the locally stored email
         },
-        { withCredentials: true } // Include cookies if necessary
+        { withCredentials: true }
       );
       setTranslatedText(response.data.translatedText);
     } else {
-      // Redirect or alert user to log in
       alert("Please login to use the translation feature.");
       Navigate("/login");
     }
@@ -77,7 +77,6 @@ const handleTranslate = async () => {
     }
   }
 };
-
 
   const handleSpeak = () => {
     if (!textToTranslate.trim()) {
