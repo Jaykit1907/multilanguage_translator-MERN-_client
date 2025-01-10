@@ -7,6 +7,7 @@ import Image from "./Image.js";
 import axios from "axios";
 import { HOME_URL,LOGOUT_URL,PROTECTED_URL} from "./Url.js";
 import "./Nav.css";
+import History2 from "./History2.js";
 
 const Nav = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -73,6 +74,7 @@ const handleLogout = async () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/history" element={<History2/>}/>
         <Route
           path="/login"
           element={

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Home.css";
 import {useNavigate } from "react-router-dom";
-import Login from "./Login.js";
+import History2 from "./History2.js";
 import { HOME_URL,TRANSLATE_URL,LOGOUT_URL,AUTHENTICATION_URL } from "./Url.js";
 import { useLocation } from "react-router-dom";
 
@@ -29,8 +29,25 @@ useEffect(() => {
     setShowlogin(false);
   }
 }, [location.state]);
+
+function getCookie(name) {
+  const cookieArr = document.cookie.split("; ");
+  for (const cookie of cookieArr) {
+      const [key, value] = cookie.split("=");
+      if (key === name) {
+          return decodeURIComponent(value); // Decode the cookie value
+      }
+  }
+  return null; // Return null if the cookie is not found
+}
+
+// Example usage:
+
+
 const handleTranslate = async () => {
   try {
+    const email = getCookie("email");
+    console.log("this is email",email); 
     // Verify authentication
     const GetVerify = await axios.get(AUTHENTICATION_URL, { withCredentials: true });
 
@@ -42,6 +59,7 @@ const handleTranslate = async () => {
           text: textToTranslate,
           language1: selectedLanguage1,
           language2: selectedLanguage2,
+          email: email,
         },
         { withCredentials: true } // Include cookies if necessary
       );
@@ -92,6 +110,11 @@ const handleTranslate = async () => {
   
   return (
     <>
+
+    <div className="history_visible">
+      <History2/>
+      </div>
+
 
       {show && (
         <section className="text_container">

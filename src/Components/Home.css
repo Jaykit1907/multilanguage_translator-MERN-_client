@@ -95,6 +95,10 @@ select{
       opacity: 1;
     }
   }
+
+  .history_visible{
+    display: none;
+  }
   @media screen and (max-width:700px){
     .textarea_container1{
         width:100%;
