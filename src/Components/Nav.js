@@ -79,7 +79,7 @@ const handleLogout = async () => {
       <Route
   path="/"
   element={
-    email ? <Home email={email} /> : <Home/>
+    email ? <Home email={email} /> : <p>Loading email...</p>
   }
 />
 
