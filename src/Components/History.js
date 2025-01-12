@@ -11,7 +11,7 @@ const History = ({ email}) => {
     const fetchHistory = async () => {
     
       try {
-        console.log(email);
+        
         const response = await axios.get(`${HISTORY_URL}/${email}`);
         setHistory(response.data);
       } catch (error) {

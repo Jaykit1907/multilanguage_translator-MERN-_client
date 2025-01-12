@@ -36,6 +36,7 @@ const Login = (props) => {
           setShow(false);
           // Navigate after a successful login
           navigate("/", { state: { loggedIn: true } });
+          window.location.reload();
         }, 2000);
       } else {
         setMsg(response.data.msg);

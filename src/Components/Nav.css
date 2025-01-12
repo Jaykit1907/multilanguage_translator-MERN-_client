@@ -37,17 +37,26 @@ a:hover{
 .username_container{
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
 }
 .username_container p{
     font-size:20px;
     color:white;
+    padding:0px;
+    text-align: center;
 }
 
 @media screen and (max-width:400px){
 
     .username_container p{
         font-size:18px;
+    }
+
+    nav{
+        padding:0px 10px;
+    }
+    nav a{
+        padding:7px;
     }
     
 }

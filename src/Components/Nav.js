@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, Routes, Route } from "react-router-dom";
+import { NavLink, Routes, Route, useNavigate } from "react-router-dom";
 import Login from "./Login.js";
 import Signup from "./Signup.js";
 import Home from "./Home.js";
@@ -8,11 +8,15 @@ import axios from "axios";
 import { HOME_URL, LOGOUT_URL, PROTECTED_URL } from "./Url.js";
 import "./Nav.css";
 import History2 from "./History2.js";
+import Home_container from "./Home_container.js";
+import Home_container1 from "./Home_container1.js";
 
 const Nav = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true); // Track loading state
+  const navigate = useNavigate();
 
   // Check authentication status
   const checkAuthStatus = async () => {
@@ -25,11 +29,12 @@ const Nav = () => {
 
       setUser(response.data.user);
       setEmail(response.data.email);
-
       setIsAuthenticated(value); // Update state with the value from the backend
     } catch (error) {
       console.error("Error in checkAuthStatus:", error);
       setIsAuthenticated(false); // Set to false if there's an error
+    } finally {
+      setLoading(false); // End loading state
     }
   };
 
@@ -44,7 +49,11 @@ const Nav = () => {
 
       if (response.status === 200) {
         console.log(response.data.message);
-        setIsAuthenticated(false); // Update state to reflect the user is logged out
+        setIsAuthenticated(false);
+       // Update state to reflect the user is logged out
+       localStorage.removeItem("email");
+
+        navigate("/");
       } else {
         console.error("Unexpected response:", response);
       }
@@ -59,6 +68,7 @@ const Nav = () => {
         <NavLink to="/">Home</NavLink>
         {isAuthenticated ? (
           <>
+            <NavLink to="/history">History</NavLink>
             <div className="username_container">
               <p>Welcome {user}</p>
               <button className="logoutbtn" onClick={handleLogout}>
@@ -75,17 +85,19 @@ const Nav = () => {
       </nav>
 
       <Routes>
+        <Route path="/text" element={<Home />} />
         <Route
           path="/"
           element={
-            email ? (
-              <Home email={email} />
+            loading ? (
+              <p>Loading...</p> // Show loading message while fetching email
+            ) : email ? (
+              <Home_container email={email} /> // Render Home_container when email is available
             ) : (
-              <p>Loading email...</p> // Show a loading message if email is not yet available
+              <Home_container1 /> // Render fallback component if email is not set
             )
           }
         />
-
         <Route path="/history" element={<History2 email={email} />} />
         <Route
           path="/login"

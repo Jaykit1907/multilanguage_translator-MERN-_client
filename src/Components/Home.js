@@ -5,10 +5,11 @@ import {useNavigate } from "react-router-dom";
 import History2 from "./History2.js";
 import { HOME_URL,TRANSLATE_URL,LOGOUT_URL,AUTHENTICATION_URL } from "./Url.js";
 import { useLocation } from "react-router-dom";
+import Home_container from "./Home_container.js";
 
 import LanguageList from "./LanguageList.js";
 
-const Home = ({email}) => {
+const Home = () => {
   const [show, setShow] = useState(true);
   const [msg, setMsg] = useState("");
   const [showlogin, setShowlogin] = useState(true);
@@ -18,20 +19,23 @@ const Home = ({email}) => {
   const [translatedText, setTranslatedText] = useState("");
   const [textToTranslate, setTextToTranslate] = useState("");
   const location = useLocation();
-  const [localEmail, setLocalEmail] = useState(email);
+  const [localEmail, setLocalEmail] = useState("");
 
 //   const [loading, setLoading] = useState(false);
 //hii
 
 
-useEffect(() => {
-  if (location.state?.loggedIn) {
-    console.log("this is location running");
-    setShow(true);
-    setShowlogin(false);
-  }
-}, [location.state]);
+// useEffect(() => {
+//   if (location.state?.loggedIn) {
+//     console.log("this is location running");
+   
+//     setShow(true);
+//     setShowlogin(false);
+//   }
+// }, [location.state]);
 
+
+//console.log("hii",email);
 
 
 // function getCookie(name) {
@@ -47,8 +51,17 @@ useEffect(() => {
 
 // Example usage:
 
+useEffect(()=>{
+
+  setLocalEmail(localStorage.getItem("email"));
+  console.log("this is email from home page:",localEmail);
+
+});
+
 const handleTranslate = async () => {
   try {
+    setLocalEmail(localStorage.getItem("email"));
+  //  setLocalEmail(email)
     console.log("This is email:", localEmail); // Debugging
     // Use localEmail for the translation request
     const GetVerify = await axios.get(AUTHENTICATION_URL, { withCredentials: true });
@@ -108,7 +121,10 @@ const handleTranslate = async () => {
 
   
   return (
+
+    
     <>
+  
 
     <div className="history_visible">
       <History2/>
