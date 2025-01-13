@@ -86,7 +86,7 @@ const Login = (props) => {
           />
           <button type="submit">Login</button>
           <p>
-            Don't have an account <Link to="/signup">Signup</Link>
+            Don't have an account <Link to="/signup"><span className="switchlink">Signup</span></Link>
           </p>
         </form>
       </section>

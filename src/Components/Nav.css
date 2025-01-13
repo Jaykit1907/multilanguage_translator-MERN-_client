@@ -8,9 +8,9 @@ nav{
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: purple;
-    height:50px;
-    padding:0px 30px;
+    background-color:rgb(39, 39, 92);
+    height:60px;
+    padding:0px 150px;
     
 
     
@@ -18,8 +18,9 @@ nav{
 nav a{
     color:white;
     text-decoration: none;
-    padding:5px;
-    border-bottom:purple;
+    padding:4px;
+    font-size:18px;
+    border-bottom:rgb(39,39,92);
 
 }
 
@@ -46,7 +47,23 @@ a:hover{
     text-align: center;
 }
 
+@media screen and (max-width:700px){
+    nav{
+        padding:0px 100px;
+    }
+
+}
+@media screen and (max-width:600px){
+    nav{
+        padding:0px 30px;
+    }
+
+}
 @media screen and (max-width:400px){
+
+    nav{
+        padding:0px 80px;
+    }
 
     .username_container p{
         font-size:18px;

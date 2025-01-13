@@ -5,7 +5,7 @@ import Signup from "./Signup.js";
 import Home from "./Home.js";
 import Image from "./Image.js";
 import axios from "axios";
-import { HOME_URL, LOGOUT_URL, PROTECTED_URL } from "./Url.js";
+import { LOGOUT_URL, PROTECTED_URL } from "./Url.js";
 import "./Nav.css";
 import History2 from "./History2.js";
 import Home_container from "./Home_container.js";

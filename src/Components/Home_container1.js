@@ -1,13 +1,14 @@
-import React, { useEffect } from "react";
+import React, {useState} from "react";
 import "./Home_container.css";
 import { useNavigate } from "react-router-dom";
-import Home from "./Home.js";
 import axios from "axios";
+import Login from "./Login.js";
 import { AUTHENTICATION_URL } from "./Url.js";
 
 const Home_container = () => {
 //   console.log("homecontainer", email);
   const Navlink = useNavigate();
+  const [show,setShow]=useState(false);
 
   const authenticate_verify = async () => {
     try {
@@ -18,8 +19,8 @@ const Home_container = () => {
         console.log(GetVerify.data.email);
         return true;
       } else {
-        alert("Please login to use the translation feature.");
-        Navlink("/login");
+        //alert("Please login to use the translation feature.");
+        setShow(true);
         return false;
       }
     } catch (error) {
@@ -57,7 +58,21 @@ const Home_container = () => {
   };
 
   return (
+
+
     <>
+
+      {show  &&    
+                   <>
+                  <div className="login_show">
+                  <Login/>
+                  </div>
+
+                  </>
+
+      }
+
+
       <div className="Home_container">
         <div className="div_container">
           <h1>Text Translate</h1>

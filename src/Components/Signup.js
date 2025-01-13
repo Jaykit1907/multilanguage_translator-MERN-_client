@@ -133,7 +133,7 @@ const Signup=()=>{
             <input type="text" placeholder="confirm password" required name="cpassword" value={alldata.cpassword} onChange={handleChange}></input>
           
             <button type="submit">Signup</button>
-            <p>Already have an account <Link to="/login">Login</Link></p>
+            <p>Already have an account <Link to="/login"><span className="switchlink">Login</span></Link></p>
         </form>
     </section>
 
