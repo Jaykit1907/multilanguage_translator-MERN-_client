@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Tesseract from "tesseract.js";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "./Crop"; // Import the getCroppedImg function
@@ -13,8 +13,11 @@ const Image = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false); // Toggle camera view
+  const videoRef = useRef(null); // Ref to access the video element
+  const canvasRef = useRef(null); // Ref to access the canvas element
 
-  // Handle image upload from file system or capture from camera
+  // Handle image upload from file system
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -22,28 +25,50 @@ const Image = () => {
     }
   };
 
-  // Handle camera capture using MediaDevices API
-  const handleCaptureImage = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      const video = document.createElement("video");
-      video.srcObject = stream;
-      video.play();
+  // Handle opening the camera
+  const openCamera = async () => {
+  try {
+    console.log("Opening camera...");
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    console.log("Camera stream acquired:", stream);
 
-      const canvas = document.createElement("canvas");
+    setIsCameraOpen(true);
+    if (videoRef.current) {
+      videoRef.current.srcObject = stream; // Set the camera stream
+      videoRef.current.play();
+      console.log("Video element source set successfully");
+    }
+  } catch (error) {
+    console.error("Error accessing the camera:", error);
+    alert("Unable to access camera. Please check permissions.");
+  }
+};
+
+  // Event handler for when video metadata is loaded
+  const onVideoLoaded = () => {
+    console.log("Video loaded metadata.");
+    if (videoRef.current) {
+      videoRef.current.play(); // Ensure the video starts playing
+    }
+  };
+
+  // Capture image from the live video feed
+  const captureImage = () => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (canvas && video) {
       const context = canvas.getContext("2d");
-      video.onloadeddata = () => {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Convert canvas to image URL
-        const capturedImage = canvas.toDataURL("image/png");
-        setImage(capturedImage);
-        stream.getTracks().forEach(track => track.stop()); // Stop the camera after capture
-      };
-    } catch (error) {
-      console.error("Error accessing the camera:", error);
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const capturedImage = canvas.toDataURL("image/png");
+      setImage(capturedImage);
+      setIsCameraOpen(false); // Close the camera after capturing the photo
+      const stream = video.srcObject;
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop()); // Stop the camera
+        console.log("Camera stream stopped.");
+      }
     }
   };
 
@@ -99,9 +124,28 @@ const Image = () => {
       </div>
 
       {/* Camera capture button */}
-      <button onClick={handleCaptureImage} className="capture-button">
-        Capture Image
-      </button>
+      {!isCameraOpen && (
+        <button onClick={openCamera} className="capture-button">
+          Open Camera
+        </button>
+      )}
+
+      {isCameraOpen && (
+        <div className="camera-container">
+          <video
+            ref={videoRef}
+            className="camera-view"
+            autoPlay
+            playsInline
+            onLoadedMetadata={onVideoLoaded} // Ensure video starts after metadata is loaded
+            style={{ width: "100%", height: "auto", borderRadius: "10px" }} // Ensure the video has a width and height
+          />
+          <button onClick={captureImage} className="capture-button">
+            Capture Photo
+          </button>
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+        </div>
+      )}
 
       <div className="language-selection">
         <label>Select Language:</label>
@@ -164,7 +208,7 @@ const Image = () => {
       {text && (
         <div className="text-container">
           <h3 className="text-title">Extracted Text:</h3>
-          <p className="extracted-text">{text}</p>
+          <pre className="extracted-text">{text}</pre>
         </div>
       )}
     </div>
