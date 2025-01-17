@@ -57,6 +57,12 @@ const Home_container = () => {
     }
   };
 
+
+  const crosscancel=()=>{
+    setShow(false);
+
+  }
+
   return (
 
 
@@ -65,17 +71,20 @@ const Home_container = () => {
       {show  &&    
                    <>
                   <div className="login_show">
+                  <i className="fa-solid fa-xmark icon_cancel" onClick={crosscancel}/>
                   <Login/>
+                 
+                 
                   </div>
 
                   </>
 
       }
 
-
       <div className="Home_container">
         <div className="div_container">
           <h1>Text Translate</h1>
+
           <button className="hmbtn" onClick={textwork}>Use</button>
         </div>
 

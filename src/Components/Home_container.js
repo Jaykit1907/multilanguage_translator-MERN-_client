@@ -75,6 +75,8 @@ const Home_container = ({ email }) => {
 {show  &&    
                    <>
                   <div className="login_show">
+                  <i className="fa-solid fa-xmark icon_cancel"/>
+
                   <Login/>
                   </div>
 

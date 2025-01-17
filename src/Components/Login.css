@@ -20,6 +20,7 @@ form{
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    position: relative;
     border:1px solid rgba(134, 134, 223 );
     height:auto;
     background-image: linear-gradient(to top,rgba(134, 134, 202, 0.7),rgb(174, 181, 190));
@@ -200,7 +201,6 @@ form button{
     
     
 }
-
 
 
 

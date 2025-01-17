@@ -1,218 +1,222 @@
-import React, { useState, useRef } from "react";
-import Tesseract from "tesseract.js";
-import Cropper from "react-easy-crop";
-import getCroppedImg from "./Crop"; // Import the getCroppedImg function
-import "./Image.css"; // Import the external CSS
+import React, { useState, useRef, useEffect } from 'react';
+import Cropper from 'react-cropper';
+import 'cropperjs/dist/cropper.css';
+import Tesseract from 'tesseract.js';
+import './Image.css';
+import LanguageList from './LanguageList1'; // Import the LanguageList for languages
 
-const Image = () => {
+const ImageCropper = () => {
   const [image, setImage] = useState(null);
-  const [text, setText] = useState("");
-  const [language, setLanguage] = useState("eng"); // Default to English
-  const [loading, setLoading] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
-  const [isCameraOpen, setIsCameraOpen] = useState(false); // Toggle camera view
-  const videoRef = useRef(null); // Ref to access the video element
-  const canvasRef = useRef(null); // Ref to access the canvas element
+  const [isCropperVisible, setIsCropperVisible] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [extractedText, setExtractedText] = useState('');
+  const [formattedText, setFormattedText] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState('eng');
+  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const videoRef = useRef(null);
+  const cropperRef = useRef(null);
+  const streamRef = useRef(null);
 
-  // Handle image upload from file system
-  const handleImageUpload = (event) => {
+  useEffect(() => {
+    if (isCameraActive) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          streamRef.current = stream;
+          videoRef.current.srcObject = stream;
+        })
+        .catch((err) => console.error('Error accessing webcam: ', err));
+    }
+    return () => {
+      if (streamRef.current) {
+        const tracks = streamRef.current.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
+    };
+  }, [isCameraActive]);
+
+  const captureImage = () => {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+    context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    const imgData = canvas.toDataURL('image/png');
+    setImage(imgData);
+    setIsCropperVisible(true);
+    setIsCameraActive(false);
+    if (streamRef.current) {
+      const tracks = streamRef.current.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+  };
+
+  const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file)); // Create a temporary URL for the uploaded file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        setIsCropperVisible(true);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  // Handle opening the camera
-  const openCamera = async () => {
-  try {
-    console.log("Opening camera...");
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-    console.log("Camera stream acquired:", stream);
-
-    setIsCameraOpen(true);
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream; // Set the camera stream
-      videoRef.current.play();
-      console.log("Video element source set successfully");
-    }
-  } catch (error) {
-    console.error("Error accessing the camera:", error);
-    alert("Unable to access camera. Please check permissions.");
-  }
-};
-
-  // Event handler for when video metadata is loaded
-  const onVideoLoaded = () => {
-    console.log("Video loaded metadata.");
-    if (videoRef.current) {
-      videoRef.current.play(); // Ensure the video starts playing
-    }
+  const handleCropperInit = (cropperInstance) => {
+    cropperRef.current = cropperInstance;
   };
 
-  // Capture image from the live video feed
-  const captureImage = () => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (canvas && video) {
-      const context = canvas.getContext("2d");
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const capturedImage = canvas.toDataURL("image/png");
-      setImage(capturedImage);
-      setIsCameraOpen(false); // Close the camera after capturing the photo
-      const stream = video.srcObject;
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop()); // Stop the camera
-        console.log("Camera stream stopped.");
+  const cropImage = () => {
+    if (cropperRef.current) {
+      const croppedCanvas = cropperRef.current.getCroppedCanvas();
+      if (croppedCanvas) {
+        const croppedData = croppedCanvas.toDataURL('image/png');
+        setCroppedImage(croppedData);
+        setIsCropperVisible(false);
+      } else {
+        console.error('Failed to crop the image');
       }
     }
   };
 
-  // Handle crop completion
-  const onCropComplete = (croppedArea, croppedAreaPixels) => {
-    setCroppedAreaPixels(croppedAreaPixels);
+  const extractTextFromImage = () => {
+    if (!croppedImage) return; // Ensure there's a cropped image before extracting text
+
+    setIsLoading(true); // Show loading indicator
+
+    Tesseract.recognize(
+      croppedImage,
+      selectedLanguage,
+      {
+        logger: (m) => console.log(m),
+      }
+    ).then(({ data: { text } }) => {
+      setExtractedText(text);
+      formatExtractedText(text); // Format extracted text
+      setIsLoading(false); // Hide loading indicator
+    }).catch((err) => {
+      console.error('Error extracting text: ', err);
+      setIsLoading(false); // Hide loading indicator on error
+    });
   };
 
-  // Handle crop button click
-  const handleCrop = async () => {
-    try {
-      const croppedImageUrl = await getCroppedImg(image, croppedAreaPixels);
-      setCroppedImage(croppedImageUrl); // Set the cropped image URL
-    } catch (error) {
-      console.error("Error cropping the image:", error);
-    }
-  };
-
-  // Extract text using Tesseract.js
-  const extractText = () => {
-    if (croppedImage) {
-      setLoading(true);
-      Tesseract.recognize(croppedImage, language, {
-        logger: (info) => console.log(info), // Logs progress
-      })
-        .then(({ data: { text } }) => {
-          setText(text);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
-    }
+  const formatExtractedText = (text) => {
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    formatted = formatted.replace(/\n/g, '<br />');
+    formatted = formatted.replace(/  /g, '&nbsp;&nbsp;');
+    setFormattedText(formatted);
   };
 
   return (
-    <div className="image-container">
-      <h2 className="title">Multi-Language OCR with Image Cropping</h2>
+    <div className="image-cropper-container">
+      <h2>Capture or Upload Image</h2>
 
-      <div className="file-input-wrapper">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handleImageUpload}
-          className="file-input"
-          id="file-upload"
-        />
-        <label htmlFor="file-upload" className="file-input-label">
-          Choose File
-        </label>
+      {/* Show buttons for uploading file or opening camera */}
+      <div className="button-container">
+        {!isCameraActive && !image && (
+          <button className="action-button" onClick={() => setIsCameraActive(true)}>
+            Start Camera
+          </button>
+        )}
+
+        {!image && (
+          <div className="file-upload-container">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="file-input"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Camera capture button */}
-      {!isCameraOpen && (
-        <button onClick={openCamera} className="capture-button">
-          Open Camera
-        </button>
-      )}
-
-      {isCameraOpen && (
+      {isCameraActive && !image && (
         <div className="camera-container">
           <video
             ref={videoRef}
-            className="camera-view"
             autoPlay
-            playsInline
-            onLoadedMetadata={onVideoLoaded} // Ensure video starts after metadata is loaded
-            style={{ width: "100%", height: "auto", borderRadius: "10px" }} // Ensure the video has a width and height
-          />
-          <button onClick={captureImage} className="capture-button">
-            Capture Photo
+            width="400"
+            height="300"
+            className="video-feed"
+          ></video>
+          <br />
+          <button className="action-button" onClick={captureImage}>
+            Capture Image
           </button>
-          <canvas ref={canvasRef} style={{ display: "none" }} />
         </div>
       )}
 
-      <div className="language-selection">
-        <label>Select Language:</label>
+      {isCropperVisible && (
+        <div className="cropper-container">
+          <h3>Crop Image</h3>
+          <Cropper
+            src={image}
+            ref={cropperRef}
+            onInitialized={handleCropperInit}
+            style={{ width: '100%', height: '400px' }}
+            guides={false}
+            movable={true}
+            zoomable={false}
+            scalable={false}
+            rotatable={false}
+          />
+          <br />
+          <button className="action-button" onClick={cropImage}>
+            Crop Image
+          </button>
+        </div>
+      )}
+
+      {croppedImage && !extractedText && (
+        <div className="cropped-image-container">
+          <h3>Cropped Image:</h3>
+          <img src={croppedImage} alt="Cropped" className="cropped-image" />
+        </div>
+      )}
+
+      {/* Language selection */}
+      <div className="language-selector">
+        <label htmlFor="language">Select Language:</label>
         <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="language-dropdown"
+          id="language"
+          value={selectedLanguage}
+          onChange={(e) => setSelectedLanguage(e.target.value)}
         >
-          <option value="eng">English</option>
-          <option value="hin">Hindi</option>
-          <option value="spa">Spanish</option>
-          <option value="fra">French</option>
-          <option value="ara">Arabic</option>
+          {LanguageList.map((lang) => (
+            <option key={lang.code} value={lang.code}>{lang.name}</option>
+          ))}
         </select>
       </div>
 
-      {/* Show the image cropper if an image is uploaded */}
-      {image && !croppedImage && (
-        <div className="cropper-container">
-          <Cropper
-            image={image}
-            crop={crop}
-            zoom={zoom}
-            aspect={4 / 3} // Aspect ratio for cropping (adjust as needed)
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onCropComplete={onCropComplete} // Capture the cropped area
-          />
-        </div>
-      )}
-
-      {/* Button to trigger the crop */}
-      {image && !croppedImage && (
-        <button onClick={handleCrop} className="crop-button">
-          Crop Image
-        </button>
-      )}
-
-      {/* Show the cropped image after cropping */}
-      {croppedImage && (
-        <img
-          src={croppedImage}
-          alt="Cropped"
-          className="cropped-image"
-        />
-      )}
-
       {/* Button to trigger text extraction */}
-      <div>
-        <button
-          onClick={extractText}
-          disabled={!croppedImage || loading}
-          className="extract-button"
-        >
-          {loading ? "Processing..." : "Extract Text"}
+      <div className="extract-text-container">
+        <button className="action-button" onClick={extractTextFromImage}>
+          Extract Text
         </button>
       </div>
 
-      {/* Display the extracted text */}
-      {text && (
-        <div className="text-container">
-          <h3 className="text-title">Extracted Text:</h3>
-          <pre className="extracted-text">{text}</pre>
+      {/* Show loading spinner */}
+      {isLoading && (
+        <div className="loading-indicator">
+          <div className="loading-spinner"></div>
+        </div>
+      )}
+
+      {formattedText && (
+        <div className="extracted-text-container">
+          <h3>Extracted Text:</h3>
+          <div
+            className="extracted-text"
+            dangerouslySetInnerHTML={{ __html: formattedText }}
+          ></div>
         </div>
       )}
     </div>
   );
 };
 
-export default Image;
+export default ImageCropper;
