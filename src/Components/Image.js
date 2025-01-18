@@ -14,6 +14,7 @@ const ImageCropper = () => {
   const [formattedText, setFormattedText] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('eng');
   const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [cameraMode, setCameraMode] = useState('environment'); // Default to back camera
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
   const streamRef = useRef(null);
@@ -21,7 +22,7 @@ const ImageCropper = () => {
   useEffect(() => {
     if (isCameraActive) {
       navigator.mediaDevices
-        .getUserMedia({ video: true })
+        .getUserMedia({ video: { facingMode: cameraMode } }) // Set facingMode based on cameraMode
         .then((stream) => {
           streamRef.current = stream;
           videoRef.current.srcObject = stream;
@@ -34,7 +35,7 @@ const ImageCropper = () => {
         tracks.forEach((track) => track.stop());
       }
     };
-  }, [isCameraActive]);
+  }, [isCameraActive, cameraMode]); // Add cameraMode as a dependency
 
   const captureImage = () => {
     const canvas = document.createElement('canvas');
@@ -136,6 +137,17 @@ const ImageCropper = () => {
 
       {isCameraActive && !image && (
         <div className="camera-container">
+          <div className="camera-toggle-container">
+            <label htmlFor="cameraMode">Camera Mode:</label>
+            <select
+              id="cameraMode"
+              value={cameraMode}
+              onChange={(e) => setCameraMode(e.target.value)}
+            >
+              <option value="environment">Back Camera</option>
+              <option value="user">Front Camera</option>
+            </select>
+          </div>
           <video
             ref={videoRef}
             autoPlay

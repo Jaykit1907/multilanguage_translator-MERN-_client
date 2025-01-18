@@ -10,4 +10,4 @@ export const IMAGE_URL = `${BASE_URL}/image`;
 export const LOGIN_URL = `${BASE_URL}/logindata`;
 export const SIGNUP_URL = `${BASE_URL}/signupdata`;
 export const LOGOUT_URL =`${BASE_URL}/logout`;
-export const TRANSLATE_URL = `${BASE_URL}/translate`;
+export const TRANSLATE_URL = `${BASE_URL}/translate`
