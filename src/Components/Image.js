@@ -110,6 +110,8 @@ const Image = () => {
   };
 
   return (
+
+    <div className="parent_container_image">
     <div className="image-cropper-container">
       <h2>Capture or Upload Image</h2>
 
@@ -216,6 +218,7 @@ const Image = () => {
           ></div>
         </div>
       )}
+    </div>
     </div>
   );
 };

@@ -1,4 +1,10 @@
 /* General Container Styling */
+
+.parent_container_image{
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+}
 .image-cropper-container {
   text-align: center;
   padding: 20px;
