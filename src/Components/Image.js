@@ -3,9 +3,9 @@ import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import Tesseract from 'tesseract.js';
 import './Image.css';
-import LanguageList from './LanguageList1'; // Import the LanguageList for languages
+import LanguageList from './LanguageList1';
 
-const ImageCropper = () => {
+const Image = () => {
   const [image, setImage] = useState(null);
   const [croppedImage, setCroppedImage] = useState(null);
   const [isCropperVisible, setIsCropperVisible] = useState(false);
@@ -13,8 +13,8 @@ const ImageCropper = () => {
   const [extractedText, setExtractedText] = useState('');
   const [formattedText, setFormattedText] = useState('');
   const [selectedLanguage, setSelectedLanguage] = useState('eng');
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [cameraMode, setCameraMode] = useState('environment'); // Default to back camera
+  const [isLoading, setIsLoading] = useState(false);
+  const [cameraMode, setCameraMode] = useState('environment');
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
   const streamRef = useRef(null);
@@ -22,7 +22,7 @@ const ImageCropper = () => {
   useEffect(() => {
     if (isCameraActive) {
       navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: cameraMode } }) // Set facingMode based on cameraMode
+        .getUserMedia({ video: { facingMode: cameraMode } })
         .then((stream) => {
           streamRef.current = stream;
           videoRef.current.srcObject = stream;
@@ -35,7 +35,7 @@ const ImageCropper = () => {
         tracks.forEach((track) => track.stop());
       }
     };
-  }, [isCameraActive, cameraMode]); // Add cameraMode as a dependency
+  }, [isCameraActive, cameraMode]);
 
   const captureImage = () => {
     const canvas = document.createElement('canvas');
@@ -83,24 +83,22 @@ const ImageCropper = () => {
   };
 
   const extractTextFromImage = () => {
-    if (!croppedImage) return; // Ensure there's a cropped image before extracting text
+    if (!croppedImage) return;
 
-    setIsLoading(true); // Show loading indicator
+    setIsLoading(true);
 
-    Tesseract.recognize(
-      croppedImage,
-      selectedLanguage,
-      {
-        logger: (m) => console.log(m),
-      }
-    ).then(({ data: { text } }) => {
-      setExtractedText(text);
-      formatExtractedText(text); // Format extracted text
-      setIsLoading(false); // Hide loading indicator
-    }).catch((err) => {
-      console.error('Error extracting text: ', err);
-      setIsLoading(false); // Hide loading indicator on error
-    });
+    Tesseract.recognize(croppedImage, selectedLanguage, {
+      logger: (m) => console.log(m),
+    })
+      .then(({ data: { text } }) => {
+        setExtractedText(text);
+        formatExtractedText(text);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Error extracting text: ', err);
+        setIsLoading(false);
+      });
   };
 
   const formatExtractedText = (text) => {
@@ -115,27 +113,25 @@ const ImageCropper = () => {
     <div className="image-cropper-container">
       <h2>Capture or Upload Image</h2>
 
-      {/* Show buttons for uploading file or opening camera */}
       <div className="button-container">
-        {!isCameraActive && !image && (
-          <button className="action-button" onClick={() => setIsCameraActive(true)}>
-            Start Camera
-          </button>
-        )}
+        <button
+          className="action-button"
+          onClick={() => setIsCameraActive(true)}
+        >
+          Open Camera
+        </button>
 
-        {!image && (
-          <div className="file-upload-container">
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="file-input"
-            />
-          </div>
-        )}
+        <div className="file-upload-container">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="file-input"
+          />
+        </div>
       </div>
 
-      {isCameraActive && !image && (
+      {isCameraActive && (
         <div className="camera-container">
           <div className="camera-toggle-container">
             <label htmlFor="cameraMode">Camera Mode:</label>
@@ -155,7 +151,6 @@ const ImageCropper = () => {
             height="300"
             className="video-feed"
           ></video>
-          <br />
           <button className="action-button" onClick={captureImage}>
             Capture Image
           </button>
@@ -171,26 +166,20 @@ const ImageCropper = () => {
             onInitialized={handleCropperInit}
             style={{ width: '100%', height: '400px' }}
             guides={false}
-            movable={true}
-            zoomable={false}
-            scalable={false}
-            rotatable={false}
           />
-          <br />
           <button className="action-button" onClick={cropImage}>
             Crop Image
           </button>
         </div>
       )}
 
-      {croppedImage && !extractedText && (
+      {croppedImage && (
         <div className="cropped-image-container">
           <h3>Cropped Image:</h3>
           <img src={croppedImage} alt="Cropped" className="cropped-image" />
         </div>
       )}
 
-      {/* Language selection */}
       <div className="language-selector">
         <label htmlFor="language">Select Language:</label>
         <select
@@ -199,19 +188,19 @@ const ImageCropper = () => {
           onChange={(e) => setSelectedLanguage(e.target.value)}
         >
           {LanguageList.map((lang) => (
-            <option key={lang.code} value={lang.code}>{lang.name}</option>
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
           ))}
         </select>
       </div>
 
-      {/* Button to trigger text extraction */}
       <div className="extract-text-container">
         <button className="action-button" onClick={extractTextFromImage}>
           Extract Text
         </button>
       </div>
 
-      {/* Show loading spinner */}
       {isLoading && (
         <div className="loading-indicator">
           <div className="loading-spinner"></div>
@@ -231,4 +220,4 @@ const ImageCropper = () => {
   );
 };
 
-export default ImageCropper;
+export default Image;
