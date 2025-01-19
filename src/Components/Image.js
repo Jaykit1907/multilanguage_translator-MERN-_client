@@ -122,6 +122,7 @@ const Image = () => {
         >
           Open Camera
         </button>
+        <p>OR</p>
 
         <div className="file-upload-container">
           <input

@@ -1,5 +1,8 @@
 /* General Container Styling */
 
+/* *{
+  border:1px solid red;
+} */
 .parent_container_image{
   display: flex;
   align-items: center; 
@@ -229,11 +232,41 @@
     padding:4px 10px;
     width:auto;
     font-size:15px;
-    height:auto;
+    height:35px;  
   }
 
   .button-container{
-    justify-content: flex-start;
+  
+    flex-direction: column;
+    gap:0px;
+    justify-content: center;
+  }
+
+  .image-cropper-container{
+
+    margin:5px;
+    width:auto;
+
+  }
+  .image-cropper-container h2{
+    width:auto;
+    font-size:20px;
+  }
+
+  .video-feed{
+    width:300px;
+    padding:5px;
+    border-radius: 10px;
+
+  }
+
+}
+
+
+@media screen and (max-width:350px) {
+
+  .video-feed{
+    width:250px;
   }
   
 }
