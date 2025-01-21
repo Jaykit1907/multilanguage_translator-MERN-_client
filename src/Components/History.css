@@ -1,7 +1,8 @@
 /* General container styling */
 .search-history-container {
     max-width: 800px;
-    margin: 20px auto;
+    margin: 80px auto;
+
     padding: 20px;
     background-color: #dbdbe2;
     border-radius: 10px;
@@ -26,6 +27,9 @@
   
   .history-item {
     padding: 15px;
+    max-height: 150px;
+    overflow: auto;
+    box-sizing: border-box;
     margin-bottom: 10px;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -35,8 +39,18 @@
   
   .history-item:hover {
     transform: scale(1.02);
+    background-color:rgb(205, 228, 171);
+    box-shadow: 0px 0px 5px blue;
+
   }
   
+  .history-group-title{
+    color:rgb(2, 19, 3);
+    margin:5px;
+    background-color:gray;
+    border-radius: 5px;
+    padding:5px;
+  }
   /* Individual text styling */
   .history-item p {
     margin: 8px 0;

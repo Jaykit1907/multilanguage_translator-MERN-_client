@@ -3,6 +3,8 @@ import Cropper from 'react-cropper';
 import 'cropperjs/dist/cropper.css';
 import Tesseract from 'tesseract.js';
 import './Image.css';
+import axios from "axios";
+import { TRANSLATE_URL } from './Url';
 import LanguageList from './LanguageList1';
 
 const Image = () => {
@@ -11,9 +13,13 @@ const Image = () => {
   const [isCropperVisible, setIsCropperVisible] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [extractedText, setExtractedText] = useState('');
+  const [translatedText,setTranslatedText]=useState("");
   const [formattedText, setFormattedText] = useState('');
-  const [selectedLanguage, setSelectedLanguage] = useState('eng');
+  const [selectedLanguage1, setSelectedLanguage1] = useState('eng');
+  const [selectedLanguage2,setSelectedLanguage2]=useState("eng");
   const [isLoading, setIsLoading] = useState(false);
+  const [showExtracted,setShowExtracted]=useState(false);
+  const [localEmail,setLocalEmail]=useState("");
   const [cameraMode, setCameraMode] = useState('environment');
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
@@ -81,25 +87,61 @@ const Image = () => {
       }
     }
   };
-
   const extractTextFromImage = () => {
-    if (!croppedImage) return;
-
+    if (!croppedImage) return Promise.reject("No cropped image available");
+  
     setIsLoading(true);
-
-    Tesseract.recognize(croppedImage, selectedLanguage, {
+  
+    return Tesseract.recognize(croppedImage, selectedLanguage1, {
       logger: (m) => console.log(m),
     })
       .then(({ data: { text } }) => {
         setExtractedText(text);
         formatExtractedText(text);
+        
         setIsLoading(false);
+        return text; // Return the extracted text
       })
       .catch((err) => {
-        console.error('Error extracting text: ', err);
+        console.error("Error extracting text: ", err);
         setIsLoading(false);
+        throw err; // Propagate the error
       });
   };
+  
+
+  const Translatework = async () => {
+    try {
+      const text = await extractTextFromImage(); // Wait for text extraction
+      const response = await axios.post(
+        TRANSLATE_URL,
+        {
+          text, // Use the returned text directly
+          language1: selectedLanguage1,
+          language2: selectedLanguage2,
+          email: localEmail, // Use the locally stored email
+        },
+        { withCredentials: true }
+      );
+  
+      if (response.data) {
+        setTranslatedText(response.data.translatedText); // Set the translated text
+        console.log(response.data.translatedText);
+        console.log("this is translated text",translatedText);
+      }
+    } catch (error) {
+      console.log("Error during translation:", error);
+    }
+  };
+  
+useEffect(()=>{
+
+  setLocalEmail(localStorage.getItem("email"));
+  console.log("this is email from image page:",localEmail);
+
+});
+
+
 
   const formatExtractedText = (text) => {
     let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -184,11 +226,11 @@ const Image = () => {
       )}
 
       <div className="language-selector">
-        <label htmlFor="language">Select Language:</label>
+        <label htmlFor="language">Image Language:</label>
         <select
           id="language"
-          value={selectedLanguage}
-          onChange={(e) => setSelectedLanguage(e.target.value)}
+          value={selectedLanguage1}
+          onChange={(e) => setSelectedLanguage1(e.target.value)}
         >
           {LanguageList.map((lang) => (
             <option key={lang.code} value={lang.code}>
@@ -198,9 +240,26 @@ const Image = () => {
         </select>
       </div>
 
+      <div className="language-selector">
+        <label htmlFor="language">Translation Language</label>
+        <select
+          id="language"
+          value={selectedLanguage2}
+          onChange={(e) => setSelectedLanguage2(e.target.value)}
+        >
+          {LanguageList.map((lang) => (
+            <option key={lang.code} value={lang.code}>
+              {lang.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+
+
       <div className="extract-text-container">
-        <button className="action-button" onClick={extractTextFromImage}>
-          Extract Text
+        <button className="action-button" onClick={Translatework}>
+          Translate Text
         </button>
       </div>
 
@@ -209,16 +268,46 @@ const Image = () => {
           <div className="loading-spinner"></div>
         </div>
       )}
+{/* 
+{formattedText && showExtracted &&(
+  <div className="extracted-text-container">
+    <h3>Extracted Text1:</h3>
+    <div
+      className="extracted-text"
+      dangerouslySetInnerHTML={{ __html: formattedText }}
+    ></div>
+    
+  </div>
+)} */}
+{formattedText && (<>
 
-      {formattedText && (
-        <div className="extracted-text-container">
-          <h3>Extracted Text:</h3>
-          <div
-            className="extracted-text"
-            dangerouslySetInnerHTML={{ __html: formattedText }}
-          ></div>
-        </div>
-      )}
+<p>
+Show extracted text 
+<input 
+  type="checkbox" 
+  checked={showExtracted} 
+  onChange={(e) => setShowExtracted(e.target.checked)} 
+/>
+</p>
+  <div className="extracted-text-container">
+    <h3>{showExtracted ? "Extracted Text:" : "Translated Text:"}</h3>
+    <div
+      className="extracted-text"
+      dangerouslySetInnerHTML={{
+        __html: showExtracted
+          ? formattedText
+          : translatedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+              .replace(/\*(.*?)\*/g, '<em>$1</em>')
+              .replace(/\n/g, '<br />')
+              .replace(/  /g, '&nbsp;&nbsp;'),
+      }}
+    ></div>
+  </div>
+  </>
+)}
+
+
+
     </div>
     </div>
   );
