@@ -64,20 +64,31 @@ const History = ({ email }) => {
 
   return (
     <div className="search-history-container">
+    
       <h2 className="history-title">Search History</h2>
+    
+
       {Object.keys(groupedHistory).length === 0 ? (
+        <>
         <p className="no-history">No history found.</p>
+       
+        </>
       ) : (
         Object.keys(groupedHistory).map((date, index) => (
           <div key={index} className="history-group">
+      
+      
             <h3 className="history-group-title"><p>{date}</p><i className="fa-solid fa-trash" onClick={()=>DateDelete(date)}/></h3>
             <ul className="history-list">
               {groupedHistory[date].map((item, idx) => (
+                <>
+
                 <li key={idx} className="history-item">
                   <p><strong>Searched Text:</strong> <span>{item.searchText}</span></p>
                   <p><strong>Translated Text:</strong> <span>{item.translatedText}</span></p>
                   <p><strong>Date:</strong> <span>{new Date(item.timestamp).toLocaleString('en-GB')}</span></p>
                 </li>
+                </>
               ))}
             </ul>
           </div>
