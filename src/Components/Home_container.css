@@ -58,9 +58,10 @@
     background-color: rgba(218, 250, 215, 0.6);
     z-index: 10;
     transform: translateX(-50%);
-    animation: showlogin 0.8s ease-in-out;
+    animation: showlogin 0.5s ease-in-out;
 
 }
+
 
 @keyframes showlogin {
     0%{
