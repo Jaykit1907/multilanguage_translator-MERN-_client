@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./History.css"; // Import the CSS file
-import { HISTORY_URL } from "./Url";
+import { HISTORY_URL,HISTORY_DELETEMANY } from "./Url";
 
 const History = ({ email }) => {
   const [history, setHistory] = useState([]);
@@ -34,6 +34,34 @@ const History = ({ email }) => {
 
   const groupedHistory = groupHistoryByDate();
 
+  const DateDelete=async(date)=>{
+
+             
+          const dateString = date;
+          const [day, month, year] = dateString.split("/");
+          const isoDate = new Date(`${year}-${month}-${day}`);
+
+// Send this date to your backend
+          //alert(isoDate); // Example: "2025-01-23T00:00:00.000Z
+          try {
+            // Send the date to the backend
+            const response = await axios.delete(HISTORY_DELETEMANY, {
+              data: { date: isoDate }, // Send the date as part of the request body
+            });
+            
+            console.log('Deleted documents:', response.data);
+
+            alert(JSON.stringify(response.data));
+            window.location.reload();
+          } catch (error) {
+            console.error('Error deleting documents:', error);
+          }
+
+
+
+    //alert(date);
+  }
+
   return (
     <div className="search-history-container">
       <h2 className="history-title">Search History</h2>
@@ -42,7 +70,7 @@ const History = ({ email }) => {
       ) : (
         Object.keys(groupedHistory).map((date, index) => (
           <div key={index} className="history-group">
-            <h3 className="history-group-title">{date}</h3>
+            <h3 className="history-group-title"><p>{date}</p><i className="fa-solid fa-trash" onClick={()=>DateDelete(date)}/></h3>
             <ul className="history-list">
               {groupedHistory[date].map((item, idx) => (
                 <li key={idx} className="history-item">
