@@ -6,6 +6,8 @@ import History2 from "./History2.js";
 import { HOME_URL,TRANSLATE_URL,LOGOUT_URL,AUTHENTICATION_URL } from "./Url.js";
 import { useLocation } from "react-router-dom";
 import Home_container from "./Home_container.js";
+import Loading from "./Loading.js";
+import Popup from "./Popup.js";
 
 import LanguageList from "./LanguageList.js";
 
@@ -20,36 +22,9 @@ const Home = () => {
   const [textToTranslate, setTextToTranslate] = useState("");
   const location = useLocation();
   const [localEmail, setLocalEmail] = useState("");
+  const [showPopup, setShowPopup] = useState(false);
+  const [showPopupmsg,setShowPopupmsg]=useState(false);
 
-//   const [loading, setLoading] = useState(false);
-//hii
-
-
-// useEffect(() => {
-//   if (location.state?.loggedIn) {
-//     console.log("this is location running");
-   
-//     setShow(true);
-//     setShowlogin(false);
-//   }
-// }, [location.state]);
-
-
-//console.log("hii",email);
-
-
-// function getCookie(name) {
-//   const cookieArr = document.cookie.split("; ");
-//   for (const cookie of cookieArr) {
-//       const [key, value] = cookie.split("=");
-//       if (key === name) {
-//           return decodeURIComponent(value); // Decode the cookie value
-//       }
-//   }
-//   return null; // Return null if the cookie is not found
-// }
-
-// Example usage:
 
 useEffect(()=>{
 
@@ -61,6 +36,8 @@ useEffect(()=>{
 const handleTranslate = async () => {
   try {
     setLocalEmail(localStorage.getItem("email"));
+    setShowPopup(true);
+    setTranslatedText("");
   //  setLocalEmail(email)
     console.log("This is email:", localEmail); // Debugging
     // Use localEmail for the translation request
@@ -77,6 +54,7 @@ const handleTranslate = async () => {
         },
         { withCredentials: true }
       );
+      setShowPopup(false);
       setTranslatedText(response.data.translatedText);
     } else {
       alert("Please login to use the translation feature.");
@@ -84,8 +62,16 @@ const handleTranslate = async () => {
     }
   } catch (error) {
     console.error("Error during authentication or translation:", error);
+    setMsg("Error during authentication or translation");
+    setShowPopupmsg(true);
+    setTimeout(() => {
+      setShowPopupmsg(false);
+     // window.location.reload();
+    }, 2000);
+    setShowPopup(false);
     if (error.response?.status === 401 || error.response?.status === 403) {
       alert("Authentication failed. Please log in again.");
+      
       Navigate("/login");
     }
   }
@@ -124,6 +110,21 @@ const handleTranslate = async () => {
 
     
     <>
+
+{showPopup && (
+        <Loading
+          message="Loading..."
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+
+{showPopupmsg && (
+        <Popup
+          message={msg}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
+  
   
 
     <div className="history_visible">
@@ -135,7 +136,7 @@ const handleTranslate = async () => {
         <section className="text_container">
 
           
-          <div className="textarea_container1">
+          <div className="textarea_container1 textarea_con">
             <select onChange={handleLanguageChange1} value={selectedLanguage1}>
               {LanguageList.map((lang) => (
                 <option key={lang.code} value={lang.code}>

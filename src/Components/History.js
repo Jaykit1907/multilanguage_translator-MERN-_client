@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./History.css"; // Import the CSS file
 import { HISTORY_URL,HISTORY_DELETEMANY } from "./Url";
+import Popup from "./Popup.js";
 
 const History = ({ email }) => {
   const [history, setHistory] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupmsg,setPopupmsg]=useState("");
+
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -51,8 +55,15 @@ const History = ({ email }) => {
             
             console.log('Deleted documents:', response.data);
 
-            alert(JSON.stringify(response.data));
-            window.location.reload();
+            setPopupmsg(JSON.stringify(response.data));
+      setShowPopup(true);
+
+      // Ensure popup closes after 2 seconds automatically
+      setTimeout(() => {
+        setShowPopup(false);
+        window.location.reload();
+      }, 2000);
+
           } catch (error) {
             console.error('Error deleting documents:', error);
           }
@@ -62,7 +73,45 @@ const History = ({ email }) => {
     //alert(date);
   }
 
-  return (
+
+
+  const deleteall=async()=>{
+    const date="delete";
+
+    try {
+      // Send the date to the backend
+      const response = await axios.delete(HISTORY_DELETEMANY, {
+         // Send the date as part of the request body
+         data: { date }, 
+      });
+      
+      console.log('Deleted documents:', response.data);
+      setPopupmsg(JSON.stringify(response.data));
+      setShowPopup(true);
+
+      // Ensure popup closes after 2 seconds automatically
+      setTimeout(() => {
+        setShowPopup(false);
+        window.location.reload();
+      }, 2000);
+
+     // alert(JSON.stringify(response.data));
+     
+    } catch (error) {
+      console.error('Error deleting documents:', error);
+    }
+
+  }
+
+  return (<>
+
+    {showPopup && (
+      <Popup
+       message={popupmsg}
+        //message="succesfuly deleted"
+        onClose={() => setShowPopup(false)}
+      />
+    )}
     <div className="search-history-container">
     
       <h2 className="history-title">Search History</h2>
@@ -76,6 +125,7 @@ const History = ({ email }) => {
       ) : (
         Object.keys(groupedHistory).map((date, index) => (
           <div key={index} className="history-group">
+            <button className="deleteallbtn" onClick={deleteall}>delete all</button>
       
       
             <h3 className="history-group-title"><p>{date}</p><i className="fa-solid fa-trash" onClick={()=>DateDelete(date)}/></h3>
@@ -95,7 +145,7 @@ const History = ({ email }) => {
         ))
       )}
     </div>
-  );
+  </>);
 };
 
 export default History;

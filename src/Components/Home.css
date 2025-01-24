@@ -104,6 +104,7 @@ select{
         width:100%;
     }
 
+    
     .textarea_container1 textarea{
         width:30vw;
         height: 30vh;
@@ -143,6 +144,10 @@ select{
     .textarea_container1{
         width:100%;
         height:auto;
+    }
+
+    .textarea_con{
+        margin-top:55px;
     }
  
     .textarea_container1 textarea{
