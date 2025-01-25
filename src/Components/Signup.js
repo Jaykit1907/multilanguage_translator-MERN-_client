@@ -17,6 +17,10 @@ const Signup=()=>{
              const [show,setShow]=useState(false);
              const [msg,setMsg]=useState("")
              const [loader,setLoader]=useState(false);
+             const [showPassword, setShowPassword] = useState(false);
+             const [password, setPassword] = useState("");
+             const [showcpassword,setShowcpassword]=useState(false);
+             
 
 
             const handleSubmit=async(e)=>{
@@ -129,8 +133,43 @@ const Signup=()=>{
             <input type="text" placeholder="name" name="name" required value={alldata.name} onChange={handleChange}></input>
             <input type="number" placeholder="phone no" name="phone" required value={alldata.phone} onChange={handleChange}></input>
             <input type="text" placeholder="email" required  name="email" value={alldata.email} onChange={handleChange}></input>
-            <input type="text" placeholder="password" required name="password" value={alldata.password} onChange={handleChange}></input>
-            <input type="text" placeholder="confirm password" required name="cpassword" value={alldata.cpassword} onChange={handleChange}></input>
+                <div className="password-container">
+          <input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="password"
+                        name="password"
+                        required
+                        value={alldata.password}
+                        onChange={handleChange}
+          />
+          <i
+            className={`fa-regular ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ cursor: "pointer" }}
+          ></i>
+
+
+          
+        </div>
+
+        <div className="password-container">
+          <input
+                        type={showcpassword ? "text" : "password"}
+                        placeholder="confirm password"
+                        name="cpassword"
+                        required
+                        value={alldata.cpassword}
+                        onChange={handleChange}
+          />
+          <i
+            className={`fa-regular ${showcpassword ? "fa-eye-slash" : "fa-eye"}`}
+            onClick={() => setShowcpassword(!showcpassword)}
+            style={{ cursor: "pointer" }}
+          ></i>
+
+
+          
+        </div>
           
             <button type="submit">Signup</button>
             <p>Already have an account <Link to="/login"><span className="switchlink">Login</span></Link></p>

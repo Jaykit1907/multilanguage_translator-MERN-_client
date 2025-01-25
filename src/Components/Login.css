@@ -7,6 +7,32 @@ body{
     height:100vh;
 }
 
+
+/* Container for password input and eye icon */
+.password-container {
+    position: relative;
+    width: 100%; /* Ensure it spans the full width of the form */
+  }
+  
+  .password-container input {
+    width:90%;
+
+  }
+  
+  .password-container i {
+    position: absolute;
+    right: 20px; /* Position the icon on the right side of the input */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888; /* Optional: Set a neutral color for the icon */
+    font-size: 1rem;
+    z-index: 10;
+  }
+  
+  .password-container i:hover {
+    color: #333; /* Change the color of the icon on hover */
+  }
+  
 .login_container{
     display: flex;
     align-items: center;
@@ -59,11 +85,15 @@ form button{
     margin:10px;
 }
 
+
 .login_containermsg{
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top:20px;
+    position:relative;
+    top:50px;
+    padding-top:30px;
 
 }
 .login_containermsg1 h1{

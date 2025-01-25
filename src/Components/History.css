@@ -29,6 +29,7 @@
     padding: 15px;
     max-height: 150px;
     overflow: auto;
+    position: relative;
     box-sizing: border-box;
     margin-bottom: 10px;
     background-color: #fff;
@@ -88,4 +89,17 @@
   .deleteallbtn{
     background-color:#27275C;
     color:white;
+  }
+
+  .deleteone{
+    position:absolute;
+    top:5px;
+    right:10px;
+    font-size:20px;
+    color:red;
+    cursor: pointer;
+  }
+  .deleteone:hover{
+    transform: scale(1.1,1.1);
+    color:rgb(179, 68, 68);
   }

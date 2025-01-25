@@ -12,6 +12,7 @@ const Login = (props) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     setLoader(true);
@@ -80,13 +81,21 @@ const Login = (props) => {
             required
             onChange={(e) => setEmail(e.target.value)}
           />
+        <div className="password-container">
           <input
-            type="password"
-            placeholder="password"
-            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
             required
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <i
+            className={`fa-regular ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+            onClick={() => setShowPassword(!showPassword)}
+            style={{ cursor: "pointer" }}
+          ></i>
+        </div>
+
           <button type="submit">Login</button>
           <p>
             Don't have an account <Link to="/signup"><span className="switchlink">Signup</span></Link>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./History.css"; // Import the CSS file
-import { HISTORY_URL,HISTORY_DELETEMANY } from "./Url";
+import { HISTORY_URL,HISTORY_DELETEMANY,HISTORY_DELETEONE } from "./Url";
 import Popup from "./Popup.js";
 
 const History = ({ email }) => {
@@ -15,6 +15,7 @@ const History = ({ email }) => {
       try {
         const response = await axios.get(`${HISTORY_URL}/${email}`);
         setHistory(response.data);
+        console.log(response.data);
       } catch (error) {
         console.error("Error fetching history:", error);
       }
@@ -102,6 +103,32 @@ const History = ({ email }) => {
     }
 
   }
+  const deleteone = async (_id) => {
+    try {
+      // Make a DELETE request to the backend with the ID
+      const response = await axios.delete(`${HISTORY_DELETEONE}/${_id}`); // Adjusted endpoint URL
+    
+      console.log('Deleted document:', response.data);
+      setPopupmsg(response.data.message); // Display the server's success message
+      setShowPopup(true);
+    
+      // Close the popup and reload the page after 2 seconds
+      setTimeout(() => {
+        setShowPopup(false);
+        window.location.reload(); // Refresh the page to reflect changes
+      }, 2000);
+    } catch (error) {
+      console.error('Error deleting document:', error);
+      setPopupmsg('Failed to delete the item.');
+      setShowPopup(true);
+  
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 2000);
+    }
+  };
+  
+
 
   return (<>
 
@@ -134,7 +161,10 @@ const History = ({ email }) => {
                 <>
 
                 <li key={idx} className="history-item">
+
+                <i className="fa-solid fa-xmark deleteone"  onClick={()=>deleteone(item._id)}/>
                   <p><strong>Searched Text:</strong> <span>{item.searchText}</span></p>
+                  <p><strong>id:</strong> <span>{item._id}</span></p>
                   <p><strong>Translated Text:</strong> <span>{item.translatedText}</span></p>
                   <p><strong>Date:</strong> <span>{new Date(item.timestamp).toLocaleString('en-GB')}</span></p>
                 </li>

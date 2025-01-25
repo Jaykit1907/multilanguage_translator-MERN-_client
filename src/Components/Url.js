@@ -11,6 +11,8 @@ export const SIGNUP_URL = `${BASE_URL}/signupdata`;
 export const LOGOUT_URL =`${BASE_URL}/logout`;
 export const TRANSLATE_URL = `${BASE_URL}/translate`;
 export const HISTORY_DELETEMANY =`${BASE_URL}/history/deleteMany`;
+export const HISTORY_DELETEONE =`${BASE_URL}/history/deleteone`;
+
 
 
 
