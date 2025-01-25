@@ -164,7 +164,6 @@ const History = ({ email }) => {
 
                 <i className="fa-solid fa-xmark deleteone"  onClick={()=>deleteone(item._id)}/>
                   <p><strong>Searched Text:</strong> <span>{item.searchText}</span></p>
-                  <p><strong>id:</strong> <span>{item._id}</span></p>
                   <p><strong>Translated Text:</strong> <span>{item.translatedText}</span></p>
                   <p><strong>Date:</strong> <span>{new Date(item.timestamp).toLocaleString('en-GB')}</span></p>
                 </li>

@@ -51,7 +51,7 @@ const Login = (props) => {
     } catch (e) {
       console.error("Error:", e);
       setLoader(false);
-      setMsg("An error occurred. Please try again.");
+      setMsg("Network error please try again!.");
       setShow(true);
       setTimeout(() => {
         setShow(false);
