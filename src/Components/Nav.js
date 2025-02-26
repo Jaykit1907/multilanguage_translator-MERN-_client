@@ -11,37 +11,33 @@ import "./Nav.css";
 import History2 from "./History2.js";
 import Home_container from "./Home_container.js";
 import Home_container1 from "./Home_container1.js";
+import { FaBars, FaTimes } from "react-icons/fa"; // Import icons
 
 const Nav = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState("");
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(true); // Track loading state
+  const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false); // State for mobile menu
   const navigate = useNavigate();
 
   // Check authentication status
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get(PROTECTED_URL, { withCredentials: true });
-      console.log("Response data:", response.data);
-
-      const value = response.data.authenticated; // Ensure this field exists in the response
-      console.log("Backend authenticated value:", value);
-
       setUser(response.data.user);
       setEmail(response.data.email);
-      setIsAuthenticated(value); // Update state with the value from the backend
+      setIsAuthenticated(response.data.authenticated);
     } catch (error) {
-      console.error("Error in checkAuthStatus:", error);
-      setIsAuthenticated(false); // Set to false if there's an error
+      setIsAuthenticated(false);
     } finally {
-      setLoading(false); // End loading state
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     checkAuthStatus();
-  }, []); // Runs only once on component mount
+  }, []);
 
   // Logout handler
   const handleLogout = async () => {
@@ -49,14 +45,9 @@ const Nav = () => {
       const response = await axios.get(LOGOUT_URL, { withCredentials: true });
 
       if (response.status === 200) {
-        console.log(response.data.message);
         setIsAuthenticated(false);
-       // Update state to reflect the user is logged out
-       localStorage.removeItem("email");
-
+        localStorage.removeItem("email");
         navigate("/");
-      } else {
-        console.error("Unexpected response:", response);
       }
     } catch (error) {
       console.error("Error logging out:", error);
@@ -65,24 +56,51 @@ const Nav = () => {
 
   return (
     <>
-      <nav>
-        <NavLink to="/">Home</NavLink>
-        {isAuthenticated ? (
-          <>
-            <NavLink to="/history">History</NavLink>
-            <div className="username_container">
-              <p>Welcome {user}</p>
-              <button className="logoutbtn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <NavLink to="/login">Login</NavLink>
-            <NavLink to="/signup">Signup</NavLink>
-          </>
-        )}
+      <nav className="navbar">
+        <div className="logo">
+          <NavLink to="/">Translatify</NavLink>
+        </div>
+
+        {/* Hamburger Menu */}
+        <div className="menu-icon" onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </div>
+
+        <ul className={menuOpen ? "nav-links active" : "nav-links"}>
+          <li>
+            <NavLink to="/" onClick={() => setMenuOpen(false)}>
+              Home
+            </NavLink>
+          </li>
+          {isAuthenticated ? (
+            <>
+              <li>
+                <NavLink to="/history" onClick={() => setMenuOpen(false)}>
+                  History
+                </NavLink>
+              </li>
+              <li className="username_container">
+                <p>Welcome {user}</p>
+                <button className="logoutbtn" onClick={handleLogout}>
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <NavLink to="/login" onClick={() => setMenuOpen(false)}>
+                  Login
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/signup" onClick={() => setMenuOpen(false)}>
+                  Signup
+                </NavLink>
+              </li>
+            </>
+          )}
+        </ul>
       </nav>
 
       <Routes>
@@ -91,38 +109,19 @@ const Nav = () => {
           path="/"
           element={
             loading ? (
-              <p>Loading...</p> // Show loading message while fetching email
+              <p>Loading...</p>
             ) : email ? (
-              <Home_container email={email} /> // Render Home_container when email is available
+              <Home_container email={email} />
             ) : (
-              <Home_container1 /> // Render fallback component if email is not set
+              <Home_container1 />
             )
           }
         />
         <Route path="/history" element={<History2 email={email} />} />
-        <Route
-          path="/login"
-          element={
-            isAuthenticated ? (
-              <p>You are already logged in!</p>
-            ) : (
-              <Login onLogin={() => setIsAuthenticated(true)} />
-            )
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            isAuthenticated ? (
-              <p>You are already logged in!</p>
-            ) : (
-              <Signup />
-            )
-          }
-        />
+        <Route path="/login" element={isAuthenticated ? <p>You are already logged in!</p> : <Login onLogin={() => setIsAuthenticated(true)} />} />
+        <Route path="/signup" element={isAuthenticated ? <p>You are already logged in!</p> : <Signup />} />
         <Route path="/ai" element={<Ai />} />
         <Route path="/image" element={<Image />} />
-        
       </Routes>
     </>
   );

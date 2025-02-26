@@ -1,84 +1,126 @@
-*{
-    padding:0;
-    margin:0;
-    box-sizing: border-box;
-}
-
-nav{
+/* Navbar Container */
+.navbar {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    background-color:rgb(39, 39, 92);
-    height:60px;
-    padding:0px 150px;
-    position:fixed;
-    z-index:20;
+    align-items: center;
+    background: rgb(39, 39, 92);
+    padding: 5px 20px;
+    color: white;
     width:100%;
-    top:0px;
-    
-    
+    position: fixed;
+    top:0;
+    z-index: 10;
 
-    
-}
-nav a{
-    color:white;
+  }
+  
+  /* Logo */
+  .logo a {
+    color: white;
+    font-size: 1.5rem;
     text-decoration: none;
-    padding:4px;
-    font-size:18px;
-    border-bottom:rgb(39,39,92);
-
-}
-
-a:hover{
-    border-bottom: 1px solid white;
-}
-.active{
-        border-bottom: 2px solid gainsboro;
-}
-
-.logoutbtn{
-    background-color: rgb(187, 185, 185);
-    color:rgb(24, 5, 13);
-}
-.username_container{
+    font-weight: bold;
+  }
+  
+  /* Nav Links (Desktop) */
+  .nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+  }
+  
+  .username_container {
     display: flex;
     align-items: center;
-    justify-content: center;
-}
-.username_container p{
-    font-size:20px;
-    color:white;
-    padding:0px;
-    text-align: center;
-}
+  }
 
-@media screen and (max-width:700px){
-    nav{
-        padding:0px 100px;
-    }
+  .navbar ul{
+    display: flex;
+    align-items: center;
+  }
 
-}
-@media screen and (max-width:600px){
-    nav{
-        padding:0px 30px;
+  .nav-links a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.2rem;
+    transition: color 0.3s;
+  }
+  
+  .nav-links a:hover {
+    color: lightgray;
+  }
+  
+  /* Active Link Styling */
+  .nav-links a.active {
+    font-weight: bold;
+    color: #ffcc00;
+    border-bottom: 2px solid white;
+    padding-bottom: 3px;
+  }
+  
+  /* Logout Button */
+  .logoutbtn {
+    background: red;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .logoutbtn:hover {
+    background: darkred;
+  }
+  
+  /* Hamburger Menu Icon */
+  .menu-icon {
+    display: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: white;
+  }
+  
+  /* Mobile Styles */
+  @media screen and (max-width: 768px) {
+    .menu-icon {
+      display: block;
+      
     }
-
-}
-@media screen and (max-width:400px){
-
-    nav{
-        padding:0px 80px;
+    .navbar{
+        padding:15px 20px;
     }
-
-    .username_container p{
-        font-size:18px;
+  
+    .nav-links {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      z-index: 4;
+      background:rgb(39, 39, 92,0.8);   
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      padding: 20px 0;
+      
+      /* Apply transition */
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+      
+      /* Initially hidden */
+      pointer-events: none;
     }
-
-    nav{
-        padding:0px 10px;
+  
+    /* Show menu when active */
+    .nav-links.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
-    nav a{
-        padding:7px;
+  
+    .nav-links li {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0;
     }
-    
-}
+  }
