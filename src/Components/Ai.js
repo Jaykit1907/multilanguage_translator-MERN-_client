@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import axios from "axios";
 import "./Ai.css"; // Import CSS file
 
@@ -76,6 +76,16 @@ const Ai = () => {
     const [targetLang, setTargetLang] = useState("es"); // Default Spanish
     const [result, setResult] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [localEmail,setLocalEmail]=useState("");
+    
+    useEffect(()=>{
+    
+      setLocalEmail(localStorage.getItem("email"));
+      console.log("this is email from ai page:",localEmail);
+    
+    });
+    
+    
 
     const handleTranslate = async () => {
       if (!text) {
