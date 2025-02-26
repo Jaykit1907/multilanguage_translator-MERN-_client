@@ -9,6 +9,7 @@
     width:100%;
     position: fixed;
     top:0;
+    height:70px;
     z-index: 10;
 
   }
@@ -19,6 +20,8 @@
     font-size: 1.5rem;
     text-decoration: none;
     font-weight: bold;
+    padding-left:20px;
+    
   }
   
   /* Nav Links (Desktop) */
@@ -42,6 +45,7 @@
     text-decoration: none;
     color: white;
     font-size: 1.2rem;
+    padding:15px;
     transition: color 0.3s;
   }
   
@@ -84,6 +88,12 @@
     .menu-icon {
       display: block;
       
+
+      
+    }
+
+    .logo a{
+        padding:0px;
     }
     .navbar{
         padding:15px 20px;
