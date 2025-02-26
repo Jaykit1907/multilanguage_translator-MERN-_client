@@ -4,6 +4,7 @@ import Login from "./Login.js";
 import Signup from "./Signup.js";
 import Home from "./Home.js";
 import Image from "./Image.js";
+import Ai from "./Ai.js";
 import axios from "axios";
 import { LOGOUT_URL, PROTECTED_URL } from "./Url.js";
 import "./Nav.css";
@@ -119,7 +120,9 @@ const Nav = () => {
             )
           }
         />
+        <Route path="/ai" element={<Ai />} />
         <Route path="/image" element={<Image />} />
+        
       </Routes>
     </>
   );

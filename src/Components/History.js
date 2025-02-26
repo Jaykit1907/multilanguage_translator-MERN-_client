@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./History.css"; // Import the CSS file
-import { HISTORY_URL,HISTORY_DELETEMANY,HISTORY_DELETEONE } from "./Url";
+import { HISTORY_URL, HISTORY_DELETEMANY, HISTORY_DELETEONE } from "./Url";
 import Popup from "./Popup.js";
 
 const History = ({ email }) => {
   const [history, setHistory] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [popupmsg,setPopupmsg]=useState("");
-
+  const [popupMsg, setPopupMsg] = useState("");
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -24,157 +23,120 @@ const History = ({ email }) => {
     if (email) fetchHistory();
   }, [email]);
 
-  // Group history by date (e.g., by day)
+  // Group history by date
   const groupHistoryByDate = () => {
     return history.reduce((groups, item) => {
-      const date = new Date(item.timestamp);
-      const dateString = date.toLocaleDateString('en-GB'); // 'en-GB' format gives day/month/year
-      if (!groups[dateString]) {
-        groups[dateString] = [];
+      const date = new Date(item.timestamp).toLocaleDateString("en-GB"); // Day/Month/Year format
+      if (!groups[date]) {
+        groups[date] = [];
       }
-      groups[dateString].push(item);
+      groups[date].push(item);
       return groups;
     }, {});
   };
 
   const groupedHistory = groupHistoryByDate();
 
-  const DateDelete=async(date)=>{
-
-             
-          const dateString = date;
-          const [day, month, year] = dateString.split("/");
-          const isoDate = new Date(`${year}-${month}-${day}`);
-
-// Send this date to your backend
-          //alert(isoDate); // Example: "2025-01-23T00:00:00.000Z
-          try {
-            // Send the date to the backend
-            const response = await axios.delete(HISTORY_DELETEMANY, {
-              data: { date: isoDate }, // Send the date as part of the request body
-            });
-            
-            console.log('Deleted documents:', response.data);
-
-            setPopupmsg(JSON.stringify(response.data));
-      setShowPopup(true);
-
-      // Ensure popup closes after 2 seconds automatically
-      setTimeout(() => {
-        setShowPopup(false);
-        window.location.reload();
-      }, 2000);
-
-          } catch (error) {
-            console.error('Error deleting documents:', error);
-          }
-
-
-
-    //alert(date);
-  }
-
-
-
-  const deleteall=async()=>{
-    const date="delete";
-
+  // Delete history for a specific date
+  const deleteByDate = async (date) => {
     try {
-      // Send the date to the backend
+      const [day, month, year] = date.split("/");
+      const isoDate = new Date(`${year}-${month}-${day}`).toISOString();
+
       const response = await axios.delete(HISTORY_DELETEMANY, {
-         // Send the date as part of the request body
-         data: { date }, 
+        data: { date: isoDate },
       });
-      
-      console.log('Deleted documents:', response.data);
-      setPopupmsg(JSON.stringify(response.data));
+
+      console.log("Deleted documents:", response.data);
+      setPopupMsg(response.data.message || "Successfully deleted records");
       setShowPopup(true);
 
-      // Ensure popup closes after 2 seconds automatically
-      setTimeout(() => {
-        setShowPopup(false);
-        window.location.reload();
-      }, 2000);
+      // Update state instead of reloading
+      setHistory(history.filter((item) => new Date(item.timestamp).toLocaleDateString("en-GB") !== date));
 
-     // alert(JSON.stringify(response.data));
-     
+      setTimeout(() => setShowPopup(false), 2000);
     } catch (error) {
-      console.error('Error deleting documents:', error);
-    }
-
-  }
-  const deleteone = async (_id) => {
-    try {
-      // Make a DELETE request to the backend with the ID
-      const response = await axios.delete(`${HISTORY_DELETEONE}/${_id}`); // Adjusted endpoint URL
-    
-      console.log('Deleted document:', response.data);
-      setPopupmsg(response.data.message); // Display the server's success message
-      setShowPopup(true);
-    
-      // Close the popup and reload the page after 2 seconds
-      setTimeout(() => {
-        setShowPopup(false);
-        window.location.reload(); // Refresh the page to reflect changes
-      }, 2000);
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      setPopupmsg('Failed to delete the item.');
-      setShowPopup(true);
-  
-      setTimeout(() => {
-        setShowPopup(false);
-      }, 2000);
+      console.error("Error deleting documents:", error);
     }
   };
-  
 
+  // Delete all history records
+  const deleteAll = async () => {
+    try {
+      const response = await axios.delete(HISTORY_DELETEMANY, {
+        data: { date: "delete" },
+      });
 
-  return (<>
+      console.log("Deleted all documents:", response.data);
+      setPopupMsg(response.data.message || "All records deleted");
+      setShowPopup(true);
 
-    {showPopup && (
-      <Popup
-       message={popupmsg}
-        //message="succesfuly deleted"
-        onClose={() => setShowPopup(false)}
-      />
-    )}
-    <div className="search-history-container">
-    
-      <h2 className="history-title">Search History</h2>
-    
+      // Clear history state
+      setHistory([]);
 
-      {Object.keys(groupedHistory).length === 0 ? (
-        <>
-        <p className="no-history">No history found.</p>
-       
-        </>
-      ) : (
-        Object.keys(groupedHistory).map((date, index) => (
-          <div key={index} className="history-group">
-            <button className="deleteallbtn" onClick={deleteall}>delete all</button>
-      
-      
-            <h3 className="history-group-title"><p>{date}</p><i className="fa-solid fa-trash" onClick={()=>DateDelete(date)}/></h3>
-            <ul className="history-list">
-              {groupedHistory[date].map((item, idx) => (
-                <>
+      setTimeout(() => setShowPopup(false), 2000);
+    } catch (error) {
+      console.error("Error deleting all documents:", error);
+    }
+  };
 
-                <li key={idx} className="history-item">
+  // Delete a single record
+  const deleteOne = async (_id) => {
+    try {
+      const response = await axios.delete(`${HISTORY_DELETEONE}/${_id}`);
 
-                <i className="fa-solid fa-xmark deleteone"  onClick={()=>deleteone(item._id)}/>
-                  <p><strong>Searched Text:</strong> <span>{item.searchText}</span></p>
-                  <p><strong>Translated Text:</strong> <span>{item.translatedText}</span></p>
-                  <p><strong>Date:</strong> <span>{new Date(item.timestamp).toLocaleString('en-GB')}</span></p>
-                </li>
-                </>
-              ))}
-            </ul>
-          </div>
-        ))
-      )}
-    </div>
-  </>);
+      console.log("Deleted document:", response.data);
+      setPopupMsg(response.data.message || "Record deleted");
+      setShowPopup(true);
+
+      // Remove deleted item from state
+      setHistory(history.filter((item) => item._id !== _id));
+
+      setTimeout(() => setShowPopup(false), 2000);
+    } catch (error) {
+      console.error("Error deleting document:", error);
+      setPopupMsg("Failed to delete the item.");
+      setShowPopup(true);
+
+      setTimeout(() => setShowPopup(false), 2000);
+    }
+  };
+
+  return (
+    <>
+      {showPopup && <Popup message={popupMsg} onClose={() => setShowPopup(false)} />}
+
+      <div className="search-history-container">
+        <h2 className="history-title">Search History</h2>
+
+        {Object.keys(groupedHistory).length === 0 ? (
+          <p className="no-history">No history found.</p>
+        ) : (
+          <>
+            <button className="deleteallbtn" onClick={deleteAll}>Delete All</button>
+            {Object.keys(groupedHistory).map((date, index) => (
+              <div key={index} className="history-group">
+                <h3 className="history-group-title">
+                  <p>{date}</p>
+                  <i className="fa-solid fa-trash" onClick={() => deleteByDate(date)} />
+                </h3>
+                <ul className="history-list">
+                  {groupedHistory[date].map((item, idx) => (
+                    <li key={idx} className="history-item">
+                      <i className="fa-solid fa-xmark deleteone" onClick={() => deleteOne(item._id)} />
+                      <p><strong>Searched Text:</strong> <span>{item.searchText}</span></p>
+                      <p><strong>Translated Text:</strong> <span>{item.translatedText}</span></p>
+                      <p><strong>Date:</strong> <span>{new Date(item.timestamp).toLocaleString("en-GB")}</span></p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </>
+  );
 };
 
 export default History;

@@ -77,15 +77,28 @@ const handleTranslate = async () => {
   }
 };
 
+  // const handleSpeak = () => {
+  //   if (!textToTranslate.trim()) {
+  //     alert("Please enter text to speak.");
+  //     return;
+  //   }
+  //   const utterance = new SpeechSynthesisUtterance(textToTranslate);
+  //   utterance.lang = selectedLanguage1;
+  //   speechSynthesis.speak(utterance);
+  // };
+
   const handleSpeak = () => {
-    if (!textToTranslate.trim()) {
-      alert("Please enter text to speak.");
-      return;
+    if ("speechSynthesis" in window) {
+      console.log("speak");
+      const utterance = new SpeechSynthesisUtterance(translatedText);
+      utterance.lang = selectedLanguage2;
+      console.log(selectedLanguage2);
+      window.speechSynthesis.speak(utterance);
+    } else {
+      alert("Text-to-Speech is not supported in this browser.");
     }
-    const utterance = new SpeechSynthesisUtterance(textToTranslate);
-    utterance.lang = selectedLanguage1;
-    speechSynthesis.speak(utterance);
   };
+
 
   const handleLanguageChange1 = (event) => {
     setSelectedLanguage1(event.target.value);
@@ -179,6 +192,7 @@ const handleTranslate = async () => {
                 Speak
               </button>
             </div>
+           
           </div>
         </section>
       )}

@@ -53,7 +53,7 @@ const Home_container = () => {
     console.log("Generative AI text work triggered");
     const isVerified = await authenticate_verify(); // Wait for authentication
     if (isVerified) {
-      Navlink("/ai-text");
+      Navlink("/Ai");
     }
   };
 
@@ -89,7 +89,7 @@ const Home_container = () => {
         </div>
 
         <div className="div_container">
-          <h1>Image to Text Extract & Translate</h1>
+          <h1>Image To Text Extract & Translate</h1>
           <button className="hmbtn" onClick={imagework}>Use</button>
         </div>
 
