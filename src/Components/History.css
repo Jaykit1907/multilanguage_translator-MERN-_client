@@ -8,6 +8,23 @@
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
+  .stylish-select {
+    padding: 2px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid #007bff;
+    background-color: #f8f9fa;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .stylish-select:hover {
+    border-color: #0056b3;
+  }
+  
+  .stylish-select:focus {
+    outline: none;
+    box-shadow: 0 0 5px #007bff;
+  }
   
   /* Title styling */
   .history-title {

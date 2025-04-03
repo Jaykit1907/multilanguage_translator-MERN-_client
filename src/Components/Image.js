@@ -75,18 +75,18 @@ const Image = () => {
     cropperRef.current = cropperInstance;
   };
 
-  const cropImage = () => {
-    if (cropperRef.current) {
-      const croppedCanvas = cropperRef.current.getCroppedCanvas();
-      if (croppedCanvas) {
-        const croppedData = croppedCanvas.toDataURL('image/png');
-        setCroppedImage(croppedData);
-        setIsCropperVisible(false);
-      } else {
-        console.error('Failed to crop the image');
-      }
-    }
-  };
+  // const cropImage = () => {
+  //   if (cropperRef.current) {
+  //     const croppedCanvas = cropperRef.current.getCroppedCanvas();
+  //     if (croppedCanvas) {
+  //       const croppedData = croppedCanvas.toDataURL('image/png');
+  //       setCroppedImage(croppedData);
+  //       setIsCropperVisible(false);
+  //     } else {
+  //       console.error('Failed to crop the image');
+  //     }
+  //   }
+  // };
   const extractTextFromImage = () => {
     if (!croppedImage) return Promise.reject("No cropped image available");
   
@@ -141,15 +141,35 @@ useEffect(()=>{
 
 });
 
+const formatExtractedText = (text) => {
+  // Convert markdown-style formatting to HTML
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold (**) 
+    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic (*)
+    .replace(/_(.*?)_/g, '<u>$1</u>') // Underline (_)
+    .replace(/~(.*?)~/g, '<del>$1</del>') // Strikethrough (~)
+    .replace(/\`(.*?)\`/g, '<code>$1</code>') // Inline code (`)
+    .replace(/•/g, '&#8226;') // Bullet point (•)
+    .replace(/▪/g, '&#9642;') // Small square bullet (▪)
+    .replace(/◆/g, '&#9670;') // Diamond bullet (◆)
+    .replace(/\n/g, '<br />') // Line breaks
+    .replace(/\s{2,}/g, '&nbsp;&nbsp;'); // Multiple spaces
 
+  setFormattedText(formatted);
+};
 
-  const formatExtractedText = (text) => {
-    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    formatted = formatted.replace(/\n/g, '<br />');
-    formatted = formatted.replace(/  /g, '&nbsp;&nbsp;');
-    setFormattedText(formatted);
-  };
+const cropImage = () => {
+  if (cropperRef.current) {
+    const croppedCanvas = cropperRef.current.getCroppedCanvas();
+    if (croppedCanvas) {
+      const croppedData = croppedCanvas.toDataURL('image/png');
+      setCroppedImage(croppedData);
+      setIsCropperVisible(false);
+    } else {
+      console.error('Failed to crop the image');
+    }
+  }
+};
 
   return (
 
@@ -218,12 +238,24 @@ useEffect(()=>{
         </div>
       )}
 
-      {croppedImage && (
-        <div className="cropped-image-container">
-          <h3>Cropped Image:</h3>
-          <img src={croppedImage} alt="Cropped" className="cropped-image" />
-        </div>
-      )}
+{croppedImage && (
+  <div className="cropped-image-container">
+    <h3>Cropped Image:</h3>
+    <img src={croppedImage} alt="Cropped" className="cropped-image" />
+    
+    {/* Button to re-crop the image */}
+    <button 
+  className="action-button" 
+  onClick={() => {
+    setCroppedImage(null);  // Clear the cropped image
+    setIsCropperVisible(true);  // Show cropper again
+  }}
+>
+  ✂️ Re-Crop Image
+</button>
+
+  </div>
+)}
 
       <div className="language-selector">
         <label htmlFor="language">Image Language:</label>

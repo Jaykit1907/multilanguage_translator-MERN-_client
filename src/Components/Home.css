@@ -7,6 +7,7 @@
 
 }
 
+
 .text_container{
     margin-top:70px;
     display: flex;
@@ -15,6 +16,64 @@
     height:90vh;
    
 }
+.input-wrapper {
+    position: relative;
+    display: flex;
+  }
+  
+  textarea {
+    width: 100%;
+    padding-right: 40px; /* Ensures space for the icon */
+  }
+  
+  .speaker-icon {
+    position: absolute;
+    top: 15px;
+    right: 17px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .speaker-icon:hover {
+    color: #000;
+  }
+  .input-wrapper {
+    position: relative;
+    display: flex;
+  }
+  
+  textarea {
+    width: 100%;
+    padding-right: 50px; /* Space for icons */
+  }
+  
+  .speaker-icon {
+    position: absolute;
+    top: 17px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .microphone-icon {
+    position: absolute;
+    top: 16px;
+    right: 60px;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .speaker-icon {
+    right: 35px; 
+/* Adjusted for spacing */
+  }
+  
+  .speaker-icon:hover, .microphone-icon:hover {
+    color: #000;
+  }
+  
 .textarea_container1{
     display: flex;
     align-items: center;
@@ -45,7 +104,7 @@ select{
     box-shadow: 0px 0px 5px rgb(165, 37, 165);
     
 }
-.textarea_container1 textarea:focus{
+.textarea_container1 textarea:focus{    
     border:1px solid purple;
     outline:none;
    

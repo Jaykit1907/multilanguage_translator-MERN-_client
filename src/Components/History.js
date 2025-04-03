@@ -6,6 +6,8 @@ import Popup from "./Popup.js";
 
 const History = ({ email }) => {
   const [history, setHistory] = useState([]);
+  const [filteredHistory, setFilteredHistory] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
   const [showPopup, setShowPopup] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
@@ -14,7 +16,7 @@ const History = ({ email }) => {
       try {
         const response = await axios.get(`${HISTORY_URL}/${email}`);
         setHistory(response.data);
-        console.log(response.data);
+        setFilteredHistory(response.data);
       } catch (error) {
         console.error("Error fetching history:", error);
       }
@@ -24,8 +26,8 @@ const History = ({ email }) => {
   }, [email]);
 
   // Group history by date
-  const groupHistoryByDate = () => {
-    return history.reduce((groups, item) => {
+  const groupHistoryByDate = (data) => {
+    return data.reduce((groups, item) => {
       const date = new Date(item.timestamp).toLocaleDateString("en-GB"); // Day/Month/Year format
       if (!groups[date]) {
         groups[date] = [];
@@ -35,7 +37,19 @@ const History = ({ email }) => {
     }, {});
   };
 
-  const groupedHistory = groupHistoryByDate();
+  const groupedHistory = groupHistoryByDate(filteredHistory);
+
+  // Handle date selection change
+  const handleDateChange = (event) => {
+    const selected = event.target.value;
+    setSelectedDate(selected);
+
+    if (selected === "") {
+      setFilteredHistory(history); // Show all history if no date is selected
+    } else {
+      setFilteredHistory(history.filter((item) => new Date(item.timestamp).toLocaleDateString("en-GB") === selected));
+    }
+  };
 
   // Delete history for a specific date
   const deleteByDate = async (date) => {
@@ -47,12 +61,12 @@ const History = ({ email }) => {
         data: { date: isoDate },
       });
 
-      console.log("Deleted documents:", response.data);
       setPopupMsg(response.data.message || "Successfully deleted records");
       setShowPopup(true);
 
       // Update state instead of reloading
       setHistory(history.filter((item) => new Date(item.timestamp).toLocaleDateString("en-GB") !== date));
+      setFilteredHistory(filteredHistory.filter((item) => new Date(item.timestamp).toLocaleDateString("en-GB") !== date));
 
       setTimeout(() => setShowPopup(false), 2000);
     } catch (error) {
@@ -67,12 +81,12 @@ const History = ({ email }) => {
         data: { date: "delete" },
       });
 
-      console.log("Deleted all documents:", response.data);
       setPopupMsg(response.data.message || "All records deleted");
       setShowPopup(true);
 
       // Clear history state
       setHistory([]);
+      setFilteredHistory([]);
 
       setTimeout(() => setShowPopup(false), 2000);
     } catch (error) {
@@ -85,12 +99,12 @@ const History = ({ email }) => {
     try {
       const response = await axios.delete(`${HISTORY_DELETEONE}/${_id}`);
 
-      console.log("Deleted document:", response.data);
       setPopupMsg(response.data.message || "Record deleted");
       setShowPopup(true);
 
       // Remove deleted item from state
       setHistory(history.filter((item) => item._id !== _id));
+      setFilteredHistory(filteredHistory.filter((item) => item._id !== _id));
 
       setTimeout(() => setShowPopup(false), 2000);
     } catch (error) {
@@ -108,6 +122,15 @@ const History = ({ email }) => {
 
       <div className="search-history-container">
         <h2 className="history-title">Search History</h2>
+
+        {history.length > 0 && (
+          <select value={selectedDate} onChange={handleDateChange} className="date-filter stylish-select">
+            <option value="">Show All</option>
+            {Object.keys(groupHistoryByDate(history)).map((date, index) => (
+              <option key={index} value={date}>{date}</option>
+            ))}
+          </select>
+        )}
 
         {Object.keys(groupedHistory).length === 0 ? (
           <p className="no-history">No history found.</p>
