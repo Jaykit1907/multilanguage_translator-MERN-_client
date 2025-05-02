@@ -4,9 +4,9 @@
     padding: 0;
     box-sizing: border-box;
   }
-  .speak-popup {
+  /* .speak-popup {
     position: fixed;
-    top: -100px; /* Start off-screen */
+    top: -100px; /* Start off-screen 
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(40, 196, 53, 0.9);
@@ -24,10 +24,10 @@
       top: -100px;
     }
     100% {
-      top: 100px; /* Position it just below the top */
+      top: 100px;
     }
   }
-  
+   */
   .mic-button {
     background-color: rgb(98, 5, 185);
     color: white;

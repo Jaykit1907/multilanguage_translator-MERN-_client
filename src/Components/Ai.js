@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Ai.css";
+import SpeechPopup from "./SpeechPopup";
 const languageOptions = [
     { code: "af", name: "Afrikaans" },
     { code: "sq", name: "Albanian" },
@@ -186,12 +187,13 @@ const Ai = () => {
     <div className="container">
       <h2>🌍 Multi-Language Translator</h2>
 
-      {showSpeakPop && (
+      {/* {showSpeakPop && (
         <div className="speak-popup">
           <p>🎤 Speak now...</p>
         </div>
-      )}
+      )} */}
 
+{showSpeakPop && <SpeechPopup/>}
       <textarea
         placeholder="Enter or speak text..."
         value={text}
@@ -220,6 +222,8 @@ const Ai = () => {
       <button onClick={() => handleTranslate()} disabled={loading}>
         {loading ? "Translating..." : "Translate"}
       </button>
+
+     
 
       {result && (
         <div className="output">

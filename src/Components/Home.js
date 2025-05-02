@@ -162,7 +162,11 @@ const Home = () => {
             <FaVolumeUp className="speaker-icon" onClick={() => handleSpeak(translatedText, selectedLanguage2)} />
           </div>
         </div>
+        <div className="btncontainer12">
+            <button onClick={handleTranslate} className="translatebtn">Translate</button>
+          </div>
       </section>
+
     </>
   );
 };
