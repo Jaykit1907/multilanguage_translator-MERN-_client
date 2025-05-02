@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Home.css";
 import { useNavigate } from "react-router-dom";
-import { FaVolumeUp, FaMicrophone } from "react-icons/fa"; // Speaker & Mic Icons
+import { FaVolumeUp, FaMicrophone } from "react-icons/fa";
 import History2 from "./History2.js";
 import { TRANSLATE_URL, AUTHENTICATION_URL } from "./Url.js";
 import Loading from "./Loading.js";
 import Popup from "./Popup.js";
 import LanguageList from "./LanguageList.js";
-import SpeechPopup from "./SpeechPopup"; // Import the speech popup
+import SpeechPopup from "./SpeechPopup";
 
 const Home = () => {
   const [msg, setMsg] = useState("");
@@ -21,18 +21,24 @@ const Home = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [showPopupmsg, setShowPopupmsg] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [shouldTranslate, setShouldTranslate] = useState(false); // NEW state
 
   useEffect(() => {
     setLocalEmail(localStorage.getItem("email"));
   }, []);
 
+  useEffect(() => {
+    if (shouldTranslate && textToTranslate.trim() !== "") {
+      handleTranslate();
+      setShouldTranslate(false); // reset
+    }
+  }, [textToTranslate, shouldTranslate]);
+
   const SPEECH_API_URL = "http://127.0.0.1:8000/api/speech/";
 
-  // Translation Function
   const handleTranslate = async () => {
     if (!textToTranslate.trim()) {
-      alert("Please enter text to translate.");
-      return;
+      return; // No alert here
     }
 
     try {
@@ -43,7 +49,12 @@ const Home = () => {
       if (GetVerify.status === 200 && GetVerify.data.authenticated) {
         const response = await axios.post(
           TRANSLATE_URL,
-          { text: textToTranslate, language1: selectedLanguage1, language2: selectedLanguage2, email: localEmail },
+          {
+            text: textToTranslate,
+            language1: selectedLanguage1,
+            language2: selectedLanguage2,
+            email: localEmail,
+          },
           { withCredentials: true }
         );
         setShowPopup(false);
@@ -65,7 +76,6 @@ const Home = () => {
     }
   };
 
-  // Text-to-Speech Function
   const handleSpeak = async (text, language) => {
     if (!text.trim()) {
       alert("No text to speak.");
@@ -83,7 +93,6 @@ const Home = () => {
     }
   };
 
-  // Speech-to-Text Function
   const handleVoiceInput = () => {
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
       alert("Speech Recognition is not supported in your browser.");
@@ -91,7 +100,7 @@ const Home = () => {
     }
 
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    recognition.lang = selectedLanguage1; // Sets recognition language dynamically
+    recognition.lang = selectedLanguage1;
     recognition.interimResults = false;
     recognition.continuous = false;
 
@@ -101,6 +110,7 @@ const Home = () => {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setTextToTranslate(transcript);
+      setShouldTranslate(true); // Trigger translation after update
       setIsListening(false);
     };
 

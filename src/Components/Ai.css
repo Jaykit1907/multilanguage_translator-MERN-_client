@@ -4,6 +4,46 @@
     padding: 0;
     box-sizing: border-box;
   }
+  .speak-popup {
+    position: fixed;
+    top: -100px; /* Start off-screen */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(40, 196, 53, 0.9);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    text-align: center;
+    z-index: 1000;
+    animation: slideDown 1s forwards;
+  }
+  
+  @keyframes slideDown {
+    0% {
+      top: -100px;
+    }
+    100% {
+      top: 100px; /* Position it just below the top */
+    }
+  }
+  
+  .mic-button {
+    background-color: rgb(98, 5, 185);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .mic-button:disabled {
+    background-color: #ccc;
+  }
+  
+  .mic-button i {
+    font-size: 20px;
+  }
   
   
   

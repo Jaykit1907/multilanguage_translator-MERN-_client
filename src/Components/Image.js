@@ -13,13 +13,13 @@ const Image = () => {
   const [isCropperVisible, setIsCropperVisible] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [extractedText, setExtractedText] = useState('');
-  const [translatedText,setTranslatedText]=useState("");
+  const [translatedText, setTranslatedText] = useState("");
   const [formattedText, setFormattedText] = useState('');
   const [selectedLanguage1, setSelectedLanguage1] = useState('eng');
-  const [selectedLanguage2,setSelectedLanguage2]=useState("eng");
+  const [selectedLanguage2, setSelectedLanguage2] = useState("eng");
   const [isLoading, setIsLoading] = useState(false);
-  const [showExtracted,setShowExtracted]=useState(false);
-  const [localEmail,setLocalEmail]=useState("");
+  const [showExtracted, setShowExtracted] = useState(false);
+  const [localEmail, setLocalEmail] = useState("");
   const [cameraMode, setCameraMode] = useState('environment');
   const videoRef = useRef(null);
   const cropperRef = useRef(null);
@@ -64,7 +64,9 @@ const Image = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
+        // Replace the previous image with the new one
         setImage(reader.result);
+        setCroppedImage(null); // Clear any cropped image state
         setIsCropperVisible(true);
       };
       reader.readAsDataURL(file);
@@ -75,40 +77,40 @@ const Image = () => {
     cropperRef.current = cropperInstance;
   };
 
-  // const cropImage = () => {
-  //   if (cropperRef.current) {
-  //     const croppedCanvas = cropperRef.current.getCroppedCanvas();
-  //     if (croppedCanvas) {
-  //       const croppedData = croppedCanvas.toDataURL('image/png');
-  //       setCroppedImage(croppedData);
-  //       setIsCropperVisible(false);
-  //     } else {
-  //       console.error('Failed to crop the image');
-  //     }
-  //   }
-  // };
+  const cropImage = () => {
+    if (cropperRef.current) {
+      const croppedCanvas = cropperRef.current.getCroppedCanvas();
+      if (croppedCanvas) {
+        const croppedData = croppedCanvas.toDataURL('image/png');
+        setCroppedImage(croppedData);
+        setIsCropperVisible(false);
+      } else {
+        console.error('Failed to crop the image');
+      }
+    }
+  };
+
   const extractTextFromImage = () => {
     if (!croppedImage) return Promise.reject("No cropped image available");
-  
+
     setIsLoading(true);
-  
+
     return Tesseract.recognize(croppedImage, selectedLanguage1, {
       logger: (m) => console.log(m),
     })
       .then(({ data: { text } }) => {
         setExtractedText(text);
         formatExtractedText(text);
-        
+
         setIsLoading(false);
-        return text; // Return the extracted text
+        return text;
       })
       .catch((err) => {
         console.error("Error extracting text: ", err);
         setIsLoading(false);
-        throw err; // Propagate the error
+        throw err;
       });
   };
-  
 
   const Translatework = async () => {
     try {
@@ -116,231 +118,195 @@ const Image = () => {
       const response = await axios.post(
         TRANSLATE_URL,
         {
-          text, // Use the returned text directly
+          text,
           language1: selectedLanguage1,
           language2: selectedLanguage2,
-          email: localEmail, // Use the locally stored email
+          email: localEmail, 
         },
         { withCredentials: true }
       );
-  
+
       if (response.data) {
         setTranslatedText(response.data.translatedText); // Set the translated text
-        console.log(response.data.translatedText);
-        console.log("this is translated text",translatedText);
       }
     } catch (error) {
       console.log("Error during translation:", error);
     }
   };
-  
-useEffect(()=>{
 
-  setLocalEmail(localStorage.getItem("email"));
-  console.log("this is email from image page:",localEmail);
+  useEffect(() => {
+    setLocalEmail(localStorage.getItem("email"));
+  }, []);
 
-});
+  const formatExtractedText = (text) => {
+    let formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+      .replace(/\*(.*?)\*/g, '<em>$1</em>') 
+      .replace(/_(.*?)_/g, '<u>$1</u>') 
+      .replace(/~(.*?)~/g, '<del>$1</del>') 
+      .replace(/\`(.*?)\`/g, '<code>$1</code>') 
+      .replace(/•/g, '&#8226;') 
+      .replace(/▪/g, '&#9642;') 
+      .replace(/◆/g, '&#9670;') 
+      .replace(/\n/g, '<br />') 
+      .replace(/\s{2,}/g, '&nbsp;&nbsp;'); 
 
-const formatExtractedText = (text) => {
-  // Convert markdown-style formatting to HTML
-  let formatted = text
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold (**) 
-    .replace(/\*(.*?)\*/g, '<em>$1</em>') // Italic (*)
-    .replace(/_(.*?)_/g, '<u>$1</u>') // Underline (_)
-    .replace(/~(.*?)~/g, '<del>$1</del>') // Strikethrough (~)
-    .replace(/\`(.*?)\`/g, '<code>$1</code>') // Inline code (`)
-    .replace(/•/g, '&#8226;') // Bullet point (•)
-    .replace(/▪/g, '&#9642;') // Small square bullet (▪)
-    .replace(/◆/g, '&#9670;') // Diamond bullet (◆)
-    .replace(/\n/g, '<br />') // Line breaks
-    .replace(/\s{2,}/g, '&nbsp;&nbsp;'); // Multiple spaces
-
-  setFormattedText(formatted);
-};
-
-const cropImage = () => {
-  if (cropperRef.current) {
-    const croppedCanvas = cropperRef.current.getCroppedCanvas();
-    if (croppedCanvas) {
-      const croppedData = croppedCanvas.toDataURL('image/png');
-      setCroppedImage(croppedData);
-      setIsCropperVisible(false);
-    } else {
-      console.error('Failed to crop the image');
-    }
-  }
-};
+    setFormattedText(formatted);
+  };
 
   return (
-
     <div className="parent_container_image">
-    <div className="image-cropper-container">
-      <h2>Capture or Upload Image</h2>
+      <div className="image-cropper-container">
+        <h2>Capture or Upload Image</h2>
+        <div className="button-container">
+          <button
+            className="action-button"
+            onClick={() => setIsCameraActive(true)}
+          >
+            Open Camera
+          </button>
+          <p>OR</p>
 
-      <div className="button-container">
-        <button
-          className="action-button"
-          onClick={() => setIsCameraActive(true)}
-        >
-          Open Camera
-        </button>
-        <p>OR</p>
-
-        <div className="file-upload-container">
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="file-input"
-          />
-        </div>
-      </div>
-
-      {isCameraActive && (
-        <div className="camera-container">
-          <div className="camera-toggle-container">
-            <label htmlFor="cameraMode">Camera Mode:</label>
-            <select
-              id="cameraMode"
-              value={cameraMode}
-              onChange={(e) => setCameraMode(e.target.value)}
-            >
-              <option value="environment">Back Camera</option>
-              <option value="user">Front Camera</option>
-            </select>
+          <div className="file-upload-container">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="file-input"
+            />
           </div>
-          <video
-            ref={videoRef}
-            autoPlay
-            width="400"
-            height="300"
-            className="video-feed"
-          ></video>
-          <button className="action-button" onClick={captureImage}>
-            Capture Image
+        </div>
+
+        {isCameraActive && (
+          <div className="camera-container">
+            <div className="camera-toggle-container">
+              <label htmlFor="cameraMode">Camera Mode:</label>
+              <select
+                id="cameraMode"
+                value={cameraMode}
+                onChange={(e) => setCameraMode(e.target.value)}
+              >
+                <option value="environment">Back Camera</option>
+                <option value="user">Front Camera</option>
+              </select>
+            </div>
+            <video
+              ref={videoRef}
+              autoPlay
+              width="400"
+              height="300"
+              className="video-feed"
+            ></video>
+            <button className="action-button" onClick={captureImage}>
+              Capture Image
+            </button>
+          </div>
+        )}
+
+        {isCropperVisible && (
+          <div className="cropper-container">
+            <h3>Crop Image</h3>
+            <Cropper
+              src={image}
+              ref={cropperRef}
+              onInitialized={handleCropperInit}
+              style={{ width: '100%', height: '400px' }}
+              guides={false}
+            />
+            <button className="action-button" onClick={cropImage}>
+              Crop Image
+            </button>
+          </div>
+        )}
+
+        {croppedImage && (
+          <div className="cropped-image-container">
+            <h3>Cropped Image:</h3>
+            <img src={croppedImage} alt="Cropped" className="cropped-image" />
+            <button 
+              className="action-button" 
+              onClick={() => {
+                setCroppedImage(null); 
+                setIsCropperVisible(true);
+                setFormattedText("");
+                setTranslatedText("");
+                setShowExtracted(false); 
+              }}
+            >
+              ✂️ Re-Crop Image
+            </button>
+          </div>
+        )}
+
+        <div className="language-selector">
+          <label htmlFor="language">Image Language:</label>
+          <select
+            id="language"
+            value={selectedLanguage1}
+            onChange={(e) => setSelectedLanguage1(e.target.value)}
+          >
+            {LanguageList.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="language-selector">
+          <label htmlFor="language">Translation Language</label>
+          <select
+            id="language"
+            value={selectedLanguage2}
+            onChange={(e) => setSelectedLanguage2(e.target.value)}
+          >
+            {LanguageList.map((lang) => (
+              <option key={lang.code} value={lang.code}>
+                {lang.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="extract-text-container">
+          <button className="action-button" onClick={Translatework}>
+            Translate Text
           </button>
         </div>
-      )}
 
-      {isCropperVisible && (
-        <div className="cropper-container">
-          <h3>Crop Image</h3>
-          <Cropper
-            src={image}
-            ref={cropperRef}
-            onInitialized={handleCropperInit}
-            style={{ width: '100%', height: '400px' }}
-            guides={false}
-          />
-          <button className="action-button" onClick={cropImage}>
-            Crop Image
-          </button>
-        </div>
-      )}
+        {isLoading && (
+          <div className="loading-indicator">
+            <div className="loading-spinner"></div>
+          </div>
+        )}
 
-{croppedImage && (
-  <div className="cropped-image-container">
-    <h3>Cropped Image:</h3>
-    <img src={croppedImage} alt="Cropped" className="cropped-image" />
-    
-    {/* Button to re-crop the image */}
-    <button 
-  className="action-button" 
-  onClick={() => {
-    setCroppedImage(null);  // Clear the cropped image
-    setIsCropperVisible(true);  // Show cropper again
-  }}
->
-  ✂️ Re-Crop Image
-</button>
-
-  </div>
-)}
-
-      <div className="language-selector">
-        <label htmlFor="language">Image Language:</label>
-        <select
-          id="language"
-          value={selectedLanguage1}
-          onChange={(e) => setSelectedLanguage1(e.target.value)}
-        >
-          {LanguageList.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
+        {formattedText && (
+          <>
+            <p>
+              Show extracted text 
+              <input 
+                type="checkbox" 
+                checked={showExtracted} 
+                onChange={(e) => setShowExtracted(e.target.checked)} 
+              />
+            </p>
+            <div className="extracted-text-container">
+              <h3>{showExtracted ? "Extracted Text:" : "Translated Text:"}</h3>
+              <div
+                className="extracted-text"
+                dangerouslySetInnerHTML={{
+                  __html: showExtracted
+                    ? formattedText
+                    : translatedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                        .replace(/\n/g, '<br />')
+                        .replace(/  /g, '&nbsp;&nbsp;'),
+                }}
+              ></div>
+            </div>
+          </>
+        )}
       </div>
-
-      <div className="language-selector">
-        <label htmlFor="language">Translation Language</label>
-        <select
-          id="language"
-          value={selectedLanguage2}
-          onChange={(e) => setSelectedLanguage2(e.target.value)}
-        >
-          {LanguageList.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-
-
-      <div className="extract-text-container">
-        <button className="action-button" onClick={Translatework}>
-          Translate Text
-        </button>
-      </div>
-
-      {isLoading && (
-        <div className="loading-indicator">
-          <div className="loading-spinner"></div>
-        </div>
-      )}
-{/* 
-{formattedText && showExtracted &&(
-  <div className="extracted-text-container">
-    <h3>Extracted Text1:</h3>
-    <div
-      className="extracted-text"
-      dangerouslySetInnerHTML={{ __html: formattedText }}
-    ></div>
-    
-  </div>
-)} */}
-{formattedText && (<>
-
-<p>
-Show extracted text 
-<input 
-  type="checkbox" 
-  checked={showExtracted} 
-  onChange={(e) => setShowExtracted(e.target.checked)} 
-/>
-</p>
-  <div className="extracted-text-container">
-    <h3>{showExtracted ? "Extracted Text:" : "Translated Text:"}</h3>
-    <div
-      className="extracted-text"
-      dangerouslySetInnerHTML={{
-        __html: showExtracted
-          ? formattedText
-          : translatedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-              .replace(/\*(.*?)\*/g, '<em>$1</em>')
-              .replace(/\n/g, '<br />')
-              .replace(/  /g, '&nbsp;&nbsp;'),
-      }}
-    ></div>
-  </div>
-  </>
-)}
-
-
-
-    </div>
     </div>
   );
 };
